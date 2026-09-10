@@ -136,6 +136,21 @@ tr:last-child td{border-bottom:none}
 .lsd{display:block;font-size:12.5px;color:rgba(255,255,255,.85);line-height:1.5}
 @media(max-width:760px){.leadsignals{grid-template-columns:1fr}}
 
+
+.cases{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.ucase{background:#fff;border:1px solid #d8ecdd;border-radius:10px;overflow:hidden}
+.ucase.rev{border-color:#f2cdcd;background:#fdf6f6}
+.ucase summary{cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:14px;list-style:none;user-select:none}
+.ucase summary::-webkit-details-marker{display:none}
+.ucase summary::before{content:"▸";color:#2e9e5b;font-size:12px;transition:transform .2s}
+.ucase.rev summary::before{color:#c62828}
+.ucase[open] summary::before{transform:rotate(90deg)}
+.ctag{background:#eef7f0;color:#2e7d32;font-size:12px;padding:2px 10px;border-radius:12px}
+.ctag.rev{background:#fbe9e9;color:#c62828}
+.cdays{margin-left:auto;font-size:12px;color:#999;flex-shrink:0}
+.cbody{padding:0 16px 14px 30px;font-size:13px;color:#555;line-height:1.7;border-top:1px dashed #e5efe8}
+.ucase.rev .cbody{border-top-color:#f2dede}
+
 </style></head><body><div class="wrap">
 
 <div class="cover">
@@ -268,18 +283,30 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div class="card" style="background:#F4FBF4;border-color:#cde9cd">
-<h3 style="margin-top:0;color:#2e7d32">具体UID的前后行为(个案佐证)</h3>
-<p class="tx" style="margin-top:0">逐 UID 核对"实验前记录Tab记什么 → 点滴记什么",几个代表性个案(脱敏):</p>
-<table>
-<tr><th>用户</th><th>实验前·记录Tab</th><th>→ 点滴内</th></tr>
-<tr><td>601469362</td><td>近1个月<b>0条记录</b></td><td>12天记体重+情绪15条</td></tr>
-<tr><td>475799088</td><td>2天,只勾"大姨妈"</td><td>5天记饮食16条(全麦吐司/紫甘蓝…)</td></tr>
-<tr><td>502955298</td><td>只记经期(流量/大姨妈)</td><td>连续8天记体重(实验前从没记过)</td></tr>
-<tr><td>642170968</td><td>1天,只记大姨妈</td><td>连续8天记体重12条</td></tr>
-<tr><td>637465533</td><td>勾选式记经期</td><td>用文字表达经期感受(勾选框承载不了)</td></tr>
-<tr><td>529662987(反例)</td><td>天天记体重等11项</td><td>快捷记体重(旧习惯换入口=纯迁移)</td></tr>
-</table>
-<div class="note good"><b>个案印证机制:实验前越是零记录/只勾经期的人,点滴越给她解锁"体重/饮食/情绪"这类记录Tab没承载过的内容;实验前就全能高频的人(反例529662987)则只是换入口。</b>点滴的新内容,主要来自被记录Tab形态压抑的低频/沉默用户 —— 但仅是记录者内部的个案信号,不代表大盘。<span style="color:#aaa;font-size:12px">(涉及未成年人及敏感健康内容已脱敏,仅示例性展示)</span></div>
+<h3 style="margin-top:0;color:#2e7d32">具体UID的前后行为(个案佐证 · 点击展开看真实记录)</h3>
+<p class="tx" style="margin-top:0">逐 UID 核对"实验前记录Tab记什么 → 点滴记什么"。点击每条展开查看真实记录样本(脱敏):</p>
+
+<div class="cases">
+<details class="ucase"><summary><b>601469362</b> <span class="ctag">近1个月0记录 → 点滴12天记体重+情绪</span><span class="cdays">15条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>近1个月无任何记录<br><b>点滴记录样本:</b>「体重:52.00公斤」「心情:一般」…(连续记体重+情绪)</div></details>
+
+<details class="ucase"><summary><b>475799088</b> <span class="ctag">只勾大姨妈 → 点滴记饮食</span><span class="cdays">连续5天·16条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>2天,只勾"大姨妈来了"<br><b>点滴记录样本:</b>「饮食:全麦吐司,煎蛋,番茄,紫甘蓝,黄瓜」「饮食:玉米,鸡蛋」「饮食:香蕉」…</div></details>
+
+<details class="ucase"><summary><b>502955298</b> <span class="ctag">只记经期 → 点滴连续记体重</span><span class="cdays">连续9天</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>只记经期(流量/大姨妈),从没记过体重<br><b>点滴记录样本:</b>「体重:74.05斤」「体重:73.35公斤」「体重:73.20公斤」…(逐日追踪)</div></details>
+
+<details class="ucase"><summary><b>642170968</b> <span class="ctag">低频 → 点滴体重打卡</span><span class="cdays">连续8天·12条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>1天,只记大姨妈<br><b>点滴记录样本:</b>「体重:56.70斤」「体重:56.45斤」「体重:56.30斤」…(每日称重)</div></details>
+
+<details class="ucase"><summary><b>637465533</b> <span class="ctag">勾选 → 文字表达经期感受</span><span class="cdays">10条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>勾选式记经期<br><b>点滴记录样本:</b>「我服了 能不能来的时候有点预告」「气死我了 经期太麻烦」「开学来月经更麻烦」…(勾选框承载不了的情绪表达)</div></details>
+
+<details class="ucase rev"><summary><b>529662987</b> <span class="ctag rev">反例:全能高频 → 只是换入口</span><span class="cdays">19条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>天天记体重等11项(本就全能高频)<br><b>点滴记录样本:</b>「体重:50.40公斤」「体重:49.80公斤」…(旧习惯换入口=纯迁移)</div></details>
+</div>
+
+<div class="note good"><b>个案印证机制:实验前越是零记录/只勾经期的人,点滴越给她解锁"体重/饮食/情绪"这类记录Tab没承载过的内容;实验前就全能高频的人(反例529662987)则只是换入口。</b>点滴的新内容,主要来自被记录Tab形态压抑的低频/沉默用户 —— 但仅是记录者内部的个案信号,不代表大盘。<span style="color:#aaa;font-size:12px">(涉及敏感健康内容已脱敏,仅示例性展示)</span></div>
 </div>
 
 <h3>第三层:全局记录净增量(决定性证据已补)</h3>
