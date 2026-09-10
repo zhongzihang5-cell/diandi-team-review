@@ -129,6 +129,13 @@ tr:last-child td{border-bottom:none}
 .evtag{display:inline-block;font-size:12px;font-weight:600;padding:5px 14px;border-radius:14px;margin:14px 0 8px;color:#fff}
 .evtag.ev1{background:#2e9e5b}.evtag.ev2{background:#e8a13c}.evtag.ev3{background:#c62828}
 .matrix .cg,td.cg{color:#2e7d32}.matrix .cr,td.cr{color:#c62828}.matrix .cn,td.cn{color:#aaa}td.ca{color:#b8860b}
+
+.leadsignals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 4px}
+.lsig{background:rgba(255,255,255,.15);border-radius:10px;padding:12px 14px}
+.lsn{display:block;font-weight:700;font-size:14px;color:#fff;margin-bottom:4px}
+.lsd{display:block;font-size:12.5px;color:rgba(255,255,255,.85);line-height:1.5}
+@media(max-width:760px){.leadsignals{grid-template-columns:1fr}}
+
 </style></head><body><div class="wrap">
 
 <div class="cover">
@@ -139,7 +146,13 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div class="card lead">
-<p class="big">一句话结论:点滴上线后,美柚<b>整体记录规模没有增长</b>——全局记录 UV 实验组 1,201,262、控制组 1,201,951(<b>−0.06%</b>),记录 PV 实验组 42,069,259、控制组 42,297,631(<b>−0.54%</b>);记录用户7日活跃天数也维持在 <b>1.30天</b>,没有形成全局习惯增量。与此同时,<b>留存与时长有小幅正向</b>、<b>分析浏览下降</b>;在少量成功记录者中,出现了<b>新用户、新内容、新表达</b>三类局部信号。<br><br><b>第二曲线的"方向假设"获得支持,但"规模"和"习惯"两个必要条件均未满足,留存机制也尚未验证。</b>下一步不是继续证明少数记录者内容新,而是验证能否把局部价值扩大为全局记录量与跨天习惯的净增长。</p>
+<p class="big">点滴上线后,美柚整体记录规模<b>没有增长</b>,记录习惯也未形成全局增量;留存与时长有小幅正向,分析浏览下降。</p>
+<div class="leadsignals">
+<div class="lsig"><span class="lsn">🟢 方向有信号</span><span class="lsd">少量记录者中出现新用户、新内容、新表达</span></div>
+<div class="lsig"><span class="lsn">🔴 规模未打开</span><span class="lsd">全局记录 UV/PV 零净增,跨天习惯很弱</span></div>
+<div class="lsig"><span class="lsn">🟡 机制未验证</span><span class="lsd">留存提升难归因于记录行为</span></div>
+</div>
+<p class="big" style="margin-top:16px;font-size:17px">第二曲线是<b>萌芽</b>:方向假设获支持,但规模与习惯两个必要条件未满足。下一步不是继续证明少数记录者内容新,而是把局部价值扩大为全局记录量与跨天习惯的净增长。</p>
 </div>
 
 <div class="kpis">
