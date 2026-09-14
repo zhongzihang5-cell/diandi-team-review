@@ -129,6 +129,7 @@ tr:last-child td{border-bottom:none}
 .evtag{display:inline-block;font-size:12px;font-weight:600;padding:5px 14px;border-radius:14px;margin:14px 0 8px;color:#fff}
 .evtag.ev1{background:#2e9e5b}.evtag.ev2{background:#e8a13c}.evtag.ev3{background:#c62828}
 .matrix .cg,td.cg{color:#2e7d32}.matrix .cr,td.cr{color:#c62828}.matrix .cn,td.cn{color:#aaa}td.ca{color:#b8860b}
+td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 
 .leadsignals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 4px}
 .lsig{background:rgba(255,255,255,.15);border-radius:10px;padding:12px 14px}
@@ -187,13 +188,13 @@ tr:last-child td{border-bottom:none}
 
 <div class="card">
 <h3 style="margin-top:0">3. 出现了新人群、新内容和家庭记录的早期信号 <span class="evb ev2b">信号</span></h3>
-<p class="tx" style="margin-top:0">近期没有记录的用户开始使用点滴,原本只记经期的用户也开始记录体重、饮食和情绪;同时出现了<b>替女儿或妹妹记录经期的家庭场景</b>(记录 Tab 结构上做不到)。这些现象证明点滴可能打开新的用户需求,<b>但目前规模较小,只能视为方向信号</b>。</p>
+<p class="tx" style="margin-top:0">近期没有记录的用户开始使用点滴，原本只记经期的用户也开始记录体重、饮食和情绪；同时出现了<b>替女儿或妹妹记录经期的家庭场景</b>(记录 Tab 结构上做不到)。这些现象证明点滴可能打开新的用户需求,<b>但目前规模较小,只能视为方向信号</b>。</p>
 </div>
 
 <div class="card" style="background:#FDF0F0;border-color:#f2cdcd">
 <h3 style="margin-top:0">4. 第二增长曲线的增量尚未验证 <span class="evb ev3b">尚未验证</span></h3>
 <table>
-<tr><th>大盘指标(实验期)</th><th>结果</th></tr>
+<tr><th>大盘指标(实验期（截至 9.9日）)</th><th>结果</th></tr>
 <tr><td>全局记录用户数(UV)</td><td>−0.06%(未增长)</td></tr>
 <tr><td>全局记录条数(PV)</td><td>−0.54%(未增长)</td></tr>
 <tr><td>全局记录用户7日活跃天数</td><td>无提升</td></tr>
@@ -249,7 +250,7 @@ tr:last-child td{border-bottom:none}
 <div class="timeline">
 <div class="tlblock tlpre"><div class="tlt">实验前观察期</div><div class="tld">2026-07-18 ~ 08-18(约1个月,31天)</div><div class="tln">给用户打画像标签。注:窗口仅约一个月,"无记录"指"近约1个月无记录",非"注册以来从未记录"</div></div>
 <div class="tlarrow">→</div>
-<div class="tlblock tlexp"><div class="tlt">实验期</div><div class="tld">2026-08-18 ~ 09-09</div><div class="tln">实验组第三Tab=点滴,两控制组=原返现;前几天为灰度爬坡期</div></div>
+<div class="tlblock tlexp"><div class="tlt">实验期（截至 9.9日）</div><div class="tld">2026-08-18 ~ 09-09</div><div class="tln">实验组第三Tab=点滴,两控制组=原返现;前几天为灰度爬坡期</div></div>
 </div>
 <h3>M0 一致性:实验前两组高度均衡</h3>
 <table>
@@ -269,13 +270,13 @@ tr:last-child td{border-bottom:none}
 <div class="card">
 <table>
 <tr><th>大盘结果</th><th>方向</th><th>幅度(实验vs控制)</th><th>可信度</th></tr>
-<tr><td><b>全局记录UV(去重记录用户)</b></td><td>无净增</td><td><b>1,201,262 vs 1,201,951 / −0.06%</b></td><td>直接规模证据</td></tr>
-<tr><td><b>全局记录PV(记录条数)</b></td><td>无净增</td><td><b>42,069,259 vs 42,297,631 / −0.54%</b></td><td>直接规模证据</td></tr>
-<tr><td>全局记录用户占DAU比</td><td>持平/微跌</td><td>−0.13pp / −0.38%</td><td>p&lt;0.01·幅度极小</td></tr>
-<tr><td>人均记录次数</td><td>无显著提升</td><td>−1.25 / −6.88%</td><td>p=0.238·功效0.2</td></tr>
-<tr><td>新增用户 D7 留存</td><td>小幅正向</td><td>+0.86pp / +6.42%</td><td>p&lt;0.01·功效0.94</td></tr>
-<tr><td>使用时长(秒)</td><td>小幅正向</td><td>+3.63 / +5.31%</td><td>p=0.039·功效0.54</td></tr>
-<tr><td>分析用户占DAU比</td><td>显著下降</td><td>−0.43pp / −4.79%</td><td>p&lt;0.01·绝对UV同步下降</td></tr>
+<tr><td><b>全局记录UV(去重记录用户)</b></td><td class="neg">无净增</td><td class="neg"><b>1,201,262 vs 1,201,951 / −0.06%</b></td><td>直接规模证据</td></tr>
+<tr><td><b>全局记录PV(记录条数)</b></td><td class="neg">无净增</td><td class="neg"><b>42,069,259 vs 42,297,631 / −0.54%</b></td><td>直接规模证据</td></tr>
+<tr><td>全局记录用户占DAU比</td><td class="neg">持平/微跌</td><td class="neg">−0.13pp / −0.38%</td><td>p&lt;0.01·幅度极小</td></tr>
+<tr><td>人均记录次数</td><td class="neg">无显著提升</td><td class="neg">−1.25 / −6.88%</td><td>p=0.238·功效0.2</td></tr>
+<tr><td>新增用户 D7 留存</td><td class="pos">小幅正向</td><td class="pos">+0.86pp / +6.42%</td><td>p&lt;0.01·功效0.94</td></tr>
+<tr><td>使用时长(秒)</td><td class="pos">小幅正向</td><td class="pos">+3.63 / +5.31%</td><td>p=0.039·功效0.54</td></tr>
+<tr><td>分析用户占DAU比</td><td class="neg">显著下降</td><td class="neg">−0.43pp / −4.79%</td><td>p&lt;0.01·绝对UV同步下降</td></tr>
 <tr><td>点滴主动记录规模</td><td>很小</td><td>1,590人(占全部记录者0.11%)</td><td>事实</td></tr>
 </table>
 <div class="note"><b>全篇要解释的矛盾:</b>为什么<b>记录规模没有增加</b>,但<b>留存和时长上涨</b>、<b>分析却下降</b>?后续各章逐层拆解。</div>
