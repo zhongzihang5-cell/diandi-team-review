@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>点滴深度分析报告 · 团队复盘版</title>
+<title>点滴深度分析报告</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#2b2b33;line-height:1.75;background:#faf7f9;font-size:15px}
@@ -129,7 +129,15 @@ tr:last-child td{border-bottom:none}
 .evtag{display:inline-block;font-size:12px;font-weight:600;padding:5px 14px;border-radius:14px;margin:14px 0 8px;color:#fff}
 .evtag.ev1{background:#2e9e5b}.evtag.ev2{background:#e8a13c}.evtag.ev3{background:#c62828}
 .matrix .cg,td.cg{color:#2e7d32}.matrix .cr,td.cr{color:#c62828}.matrix .cn,td.cn{color:#aaa}td.ca{color:#b8860b}
-td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
+td.pos,td.pos b,span.pos{color:#c62828}td.neg,td.neg b,span.neg{color:#2e7d32}
+.verdict span.neg{color:#8fd9a8}
+.sankey-scroll{overflow-x:auto;margin:8px 0 4px}
+.sankey-scroll svg{width:100%;min-width:760px;height:auto;display:block}
+.slegend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:4px 0 12px;font-size:12px;color:rgba(0,0,0,.6);line-height:1.29}
+.slegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.note ul{margin:8px 0 0 18px;font-weight:400}
+.note li{margin:8px 0}
+.note .jd{color:#c62828;font-weight:400}
 
 .leadsignals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 4px}
 .lsig{background:rgba(255,255,255,.15);border-radius:10px;padding:12px 14px}
@@ -157,102 +165,171 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 .leadp{color:rgba(255,255,255,.92);font-size:15px;line-height:1.8;margin:12px 0}
 .leadp b{color:#fff;background:rgba(255,255,255,.18);padding:0 5px;border-radius:4px}
 
+/* ===== 老板版可读性增强 ===== */
+.ekpis{grid-template-columns:repeat(5,1fr)}
+.kpi.neg .n{color:#2e7d32}.kpi.pos .n{color:#c62828}.kpi.mut .n{color:#555}
+.kpi .sub{font-size:11px;color:#b6b6be;margin-top:3px}
+.execline{font-size:13px;color:#8a8a94;text-align:center;margin:-6px 0 4px}
+.execline b{color:#c2185b}
+.tldr{display:flex;gap:11px;align-items:flex-start;background:#FFF7FA;border:1px solid #ffd9e6;border-left:4px solid #FF4D88;border-radius:0 12px 12px 0;padding:12px 16px;margin:0 0 20px;font-size:14.5px;color:#3a3a44;line-height:1.62}
+.tldr .ti{color:#FF4D88;font-weight:800;flex-shrink:0;font-size:12px;letter-spacing:1px;padding-top:2px}
+.tldr b{color:#c2185b}
+/* 四类·人形图 */
+.pg{background:#fbfafb;border:1px solid #f0e6eb;border-radius:14px;padding:18px 20px;margin:12px 0 16px}
+.pghead{font-size:13px;color:#8a8a94;margin-bottom:13px;font-weight:600}
+.pgrid{display:flex;flex-wrap:wrap;gap:3px}
+.pgrid .person{width:16px;height:16px}
+.pgnote{font-size:12.5px;color:#9a9aa2;margin-top:13px;line-height:1.6}
+.pgnote b{color:#2e7d32}.pgnote i{color:#c62828;font-style:normal}
+.bracket{display:flex;font-size:12px;font-weight:700;margin:16px 0 6px}
+.bracket span{display:block;padding-bottom:8px;text-align:center}
+.bk-l{color:#2e7d32;position:relative}.bk-r{color:#c62828;position:relative}
+.bk-l::after,.bk-r::after{content:"";position:absolute;left:6px;right:6px;bottom:0;height:6px;border:1px solid;border-bottom:none;border-radius:5px 5px 0 0}
+.bk-l::after{border-color:#8ccfa6}.bk-r::after{border-color:#e8a5a5}
+.stack{display:flex;height:40px;border-radius:9px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-direction:column;line-height:1.1;text-align:center;min-width:0}
+.seg small{font-size:9px;font-weight:600;opacity:.92;white-space:nowrap}
+.s1{background:#2e9e5b}.s2{background:#6cbf4a}.s3{background:#ff9800}.s4{background:#c62828}
+.catlg{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px;margin-top:16px}
+.clg{display:flex;align-items:center;gap:9px;font-size:13px}
+.clgic{font-size:17px;width:22px;text-align:center;flex-shrink:0}
+.clgdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.clgnm{font-weight:600}.clgd{color:#9a9aa2;font-size:11px}
+.clgpct{margin-left:auto;font-weight:800;font-size:15px;flex-shrink:0;white-space:nowrap}
+.gchip{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:9px;margin-left:6px;vertical-align:middle}
+.g-hi{background:#e3f5ea;color:#2e7d32}.g-mid{background:#fdefd6;color:#b8860b}.g-lo{background:#fbe1e1;color:#c62828}
+@media(max-width:760px){.ekpis{grid-template-columns:repeat(2,1fr)}.catlg{grid-template-columns:1fr}.pgrid .person{width:13px;height:13px}}
+
+
+/* ===== v2 叙事结构 ===== */
+.mq{color:#c2185b;font-size:15px;margin-top:16px;font-weight:600}
+.mq b{background:#FFE1EC;padding:2px 9px;border-radius:6px}
+.chainbox{background:#fff;border:1px solid #f0e6eb;border-radius:16px;padding:22px 26px;margin:24px 0}
+.chainbox .th{font-weight:700;color:#FF4D88;font-size:16px}
+.chainbox .thd{color:#8a8a94;font-size:13px;margin:6px 0 14px;line-height:1.6}
+.chgrp{margin:14px 0 2px;font-size:11px;font-weight:800;color:#b39ddb;letter-spacing:2px}
+.chain{display:flex;flex-direction:column}
+.chain a{display:flex;align-items:center;gap:12px;color:#3a3a44;text-decoration:none;padding:9px 8px;border-radius:9px}
+.chain a:hover{background:#FFF7FA}
+.chain .cn{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#FFE1EC;color:#c2185b;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+.chain a.core .cn{background:#FF4D88;color:#fff}
+.chain .cq{font-size:14.5px;font-weight:600;flex:1}
+.chain a.core .cq{color:#c2185b}
+.chain .ca{font-size:12.5px;color:#9a9aa2;flex-shrink:0;max-width:46%;text-align:right;line-height:1.35}
+.bridge{background:#F4F1FB;border:1px solid #e0d8ee;border-left:4px solid #7e6bb0;border-radius:0 12px 12px 0;padding:15px 18px;margin:20px 0;font-size:14px;color:#4a4458;line-height:1.85}
+.bridge .bt{font-weight:800;color:#5e4b91;font-size:12px;letter-spacing:1px;display:block;margin-bottom:7px}
+.bridge b{color:#5e4b91}
+.vsg{margin:16px 0 6px}
+.vsrow{margin:14px 0}
+.vsk{font-size:13px;font-weight:700;color:#444;margin-bottom:6px}
+.vsb{display:flex;align-items:center;gap:10px;margin:5px 0}
+.vslab{width:64px;flex-shrink:0;color:#777;text-align:right;font-size:12px}
+.vstrack{flex:1;background:#f4eef1;border-radius:6px;height:22px;overflow:hidden}
+.vsfill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:9px;color:#fff;font-weight:700;font-size:12px;white-space:nowrap}
+.vsfill.r{background:#FF4D88}.vsfill.g{background:#b8b8c0}
+@media(max-width:760px){.chain .ca{max-width:40%;font-size:11px}}
+
 </style></head><body><div class="wrap">
 
 <div class="cover">
-<span class="tag">用户产品 · A级 · 点滴深度分析 · 团队复盘版</span>
-<h1>点滴尚未拉动记录大盘,<br>但出现了个人记录的新需求信号</h1>
-<p class="st">先呈现大盘矛盾,再逐层判断:局部价值 · 规模瓶颈 · 机制证据</p>
-<p class="meta">实验组 1,615,090 vs 控制组×2 (各≈161万) ｜ 剔除鸿蒙,仅 iOS+Android ｜ 最新观察期 2026-08-18 ~ 09-09</p>
+<h1>点滴尚未拉动记录大盘，<br>但出现了个人记录的新需求信号</h1>
+<p class="mq">全篇层层回答一个问题：<b>点滴能否成为记录业务的"第二增长曲线"?</b></p>
+<p class="meta">实验组 1,615,090 vs 控制组×2 (各≈161万) ｜ 剔除鸿蒙，仅 iOS+Android ｜ 最新观察期 2026-08-18 ~ 09-09</p>
 </div>
 
 <div class="card lead">
 <div class="clabel">核心结论</div>
-<p class="big">点滴 MVP 验证了用户对<b>更自由、更丰富的记录方式</b>存在真实需求,但<b>第二增长曲线的增量尚未得到验证。</b></p>
-<p class="leadp">部分用户愿意通过点滴记录情绪、症状、体重、饮食等个人内容,说明产品方向有价值;但当前记录规模小、跨天复记率低,局部需求尚未沉淀为稳定的使用习惯,也没有带动美柚整体记录量增长。</p>
-<p class="leadp" style="margin-bottom:0">下一阶段的核心,<b>不是继续证明少数用户愿意记录新内容</b>,而是通过<b>清晰的价值表达、及时反馈和长期回顾</b>,让用户理解"为什么值得持续记录",从而提升点滴留存,并最终验证第二增长曲线能否成立。</p>
+<p class="big">点滴 MVP 验证了用户对<b>更自由、更丰富的记录方式</b>存在真实需求，但<b>第二增长曲线的增量尚未得到验证。</b></p>
+<p class="leadp">部分用户愿意通过点滴记录情绪、症状、体重、饮食等个人内容，说明产品方向有价值；但当前记录规模小、跨天复记率低，局部需求尚未沉淀为稳定的使用习惯，也没有带动美柚整体记录量增长。</p>
+<p class="leadp" style="margin-bottom:0">下一阶段的核心，<b>不是继续证明少数用户愿意记录新内容</b>，而是通过<b>清晰的价值表达、及时反馈和长期回顾</b>，让用户理解"为什么值得持续记录"，从而提升点滴留存，并最终验证第二增长曲线能否成立。</p>
 </div>
 
-<h2 style="border-left-color:#FF4D88">一、MVP 验证了什么</h2>
-<p class="h2sub">四个层次:需求成立 → 内容分工 → 早期新信号 → 但增量未验证</p>
+<div class="kpis ekpis">
+<div class="kpi neg"><div class="n">−0.06%</div><div class="l">全局记录 UV</div><div class="sub">未增长</div></div>
+<div class="kpi neg"><div class="n">−0.54%</div><div class="l">全局记录 PV(条数)</div><div class="sub">未增长</div></div>
+<div class="kpi mut"><div class="n">1,590</div><div class="l">点滴主动记录者</div><div class="sub">占记录者 0.11%</div></div>
+<div class="kpi mut"><div class="n">7.1%</div><div class="l">跨天复记率</div><div class="sub">习惯很弱</div></div>
+<div class="kpi pos"><div class="n">+6.42%</div><div class="l">新增用户 D7 留存</div><div class="sub">小幅正向</div></div>
+</div>
+<div class="execline">一句话：<b>质有信号、量未起来</b> —— 记录者内部有真实的新内容/新表达，但美柚整体记录规模没有净增。</div>
+
+<h2 style="border-left-color:#FF4D88">先讲结论 · MVP 验证了什么、又没验证什么</h2>
 
 <div class="card">
 <h3 style="margin-top:0">1. 用户对开放式记录存在真实需求 <span class="evb ev1b">已验证</span></h3>
-<p class="tx" style="margin-top:0">点滴记录者开始记录症状、情绪、体重、饮食等内容。在这批用户中,<b>个人生活类内容占比由记录 Tab 中的 15.6% 上升至点滴中的 34.6%</b>。这说明传统勾选式记录没有完全满足用户的表达需求 —— 点滴能承载更个性化、更需要描述和连续追踪的内容。</p>
+<p class="tx" style="margin-top:0">点滴记录者开始记录症状、情绪、体重、饮食等内容。在这批用户中，<b>个人生活类内容占比由记录 Tab 中的 15.6% 上升至点滴中的 34.6%</b>。这说明传统勾选式记录没有完全满足用户的表达需求 —— 点滴能承载更个性化、更需要描述和连续追踪的内容。</p>
 </div>
 
 <div class="card">
 <h3 style="margin-top:0">2. 点滴与原记录工具形成了内容分工 <span class="evb ev1b">已验证</span></h3>
-<p class="tx" style="margin-top:0">约 <b>94% 的点滴记录者实验期仍在使用记录 Tab</b>。用户倾向于:在记录 Tab 完成月经、流量、痛经等<b>标准化项目</b>;在点滴记录症状、情绪、体重、饮食等<b>描述型/追踪型内容</b>。因此点滴不是简单替代原工具,而是<b>拓展了美柚可以承载的记录范围</b>。</p>
+<p class="tx" style="margin-top:0">约 <b>94% 的点滴记录者实验期仍在使用记录 Tab</b>。用户倾向于：在记录 Tab 完成月经、流量、痛经等<b>标准化项目</b>;在点滴记录症状、情绪、体重、饮食等<b>描述型/追踪型内容</b>。因此点滴不是简单替代原工具，而是<b>拓展了美柚可以承载的记录范围</b>。</p>
 </div>
 
 <div class="card">
 <h3 style="margin-top:0">3. 出现了新人群、新内容和家庭记录的早期信号 <span class="evb ev2b">信号</span></h3>
-<p class="tx" style="margin-top:0">近期没有记录的用户开始使用点滴，原本只记经期的用户也开始记录体重、饮食和情绪；同时出现了<b>替女儿或妹妹记录经期的家庭场景</b>(记录 Tab 结构上做不到)。这些现象证明点滴可能打开新的用户需求,<b>但目前规模较小,只能视为方向信号</b>。</p>
+<p class="tx" style="margin-top:0">实验前近 1 个月没用过记录 Tab 的用户开始使用点滴，原本只记经期的用户也开始记录体重、饮食和情绪；同时出现了<b>替女儿或妹妹记录经期的家庭场景</b>(记录 Tab 结构上做不到)。这些现象证明点滴可能打开新的用户需求，<b>但目前规模较小，只能视为方向信号</b>。</p>
 </div>
 
 <div class="card" style="background:#FDF0F0;border-color:#f2cdcd">
 <h3 style="margin-top:0">4. 第二增长曲线的增量尚未验证 <span class="evb ev3b">尚未验证</span></h3>
 <table>
 <tr><th>大盘指标(实验期（截至 9.9日）)</th><th>结果</th></tr>
-<tr><td>全局记录用户数(UV)</td><td>−0.06%(未增长)</td></tr>
-<tr><td>全局记录条数(PV)</td><td>−0.54%(未增长)</td></tr>
+<tr><td>全局记录用户数(UV)</td><td class="neg">−0.06%(未增长)</td></tr>
+<tr><td>全局记录条数(PV)</td><td class="neg">−0.54%(未增长)</td></tr>
 <tr><td>全局记录用户7日活跃天数</td><td>无提升</td></tr>
 <tr><td>点滴主动记录者</td><td>仅 1,590 人</td></tr>
 <tr><td>点滴跨天复记率</td><td>约 7.1%</td></tr>
 </table>
-<div class="note"><b>MVP 验证了"有人愿意用新的方式记录",但没有验证"点滴能让更多人持续记录"。</b>核心问题不是完全没有需求,而是<b>用户完成一次记录后,没有充分感受到持续记录的价值</b> —— 点滴尚未形成"记录 → 获得反馈 → 积累价值 → 回来继续记录"的闭环。</div>
+<div class="note"><b>MVP 验证了"有人愿意用新的方式记录"，但没有验证"点滴能让更多人持续记录"。</b>核心问题不是完全没有需求，而是<b>用户完成一次记录后，没有充分感受到持续记录的价值</b> —— 点滴尚未形成"记录 → 获得反馈 → 积累价值 → 回来继续记录"的闭环。</div>
 </div>
 
 <div class="card" style="background:#f7f5fb;border-color:#e0d8ee">
-<h3 style="margin-top:0;color:#6b5b95">阅读须知:三层证据强度</h3>
-<p class="tx" style="margin-top:0">本报告严格区分三种证据,请对照每章末尾的强度标记阅读:</p>
+<h3 style="margin-top:0;color:#6b5b95">阅读须知：三层证据强度</h3>
+<p class="tx" style="margin-top:0">本报告严格区分三种证据，请对照每章末尾的强度标记阅读：</p>
 <div class="evlevels">
-<div class="evl ev1"><span class="evb">已验证</span><span class="evd">实验组 vs 控制组的因果结果,或逐 UID 可核实的事实</span></div>
-<div class="evl ev2"><span class="evb">信号</span><span class="evd">在特定人群(如记录者)中观察到的关联,不能外推到大盘</span></div>
-<div class="evl ev3"><span class="evb">待验证假设</span><span class="evd">对现象的产品解释,合理但尚无数据直接证明</span></div>
+<div class="evl ev1"><span class="evb">已验证</span><span class="evd">实验组 vs 控制组的因果结果，或逐 UID 可核实的事实</span></div>
+<div class="evl ev2"><span class="evb">信号</span><span class="evd">在特定人群(如记录者)中观察到的关联，不能外推到大盘</span></div>
+<div class="evl ev3"><span class="evb">待验证假设</span><span class="evd">对现象的产品解释，合理但尚无数据直接证明</span></div>
 </div>
 </div>
 
 <div class="tocbox">
-<div class="th">报告结构(总—分—总)</div>
+<div class="th">报告目录 · 九个问题层层推导</div>
 <div class="toc">
-<a href="#c1"><span>1 · 判定标准与证据分层</span><span class="q">总</span></a>
-<a href="#c2"><span>2 · 实验可信度</span><span class="q">地基</span></a>
-<a href="#c3"><span>3 · 大盘发生了什么(先摆矛盾)</span><span class="q">分</span></a>
-<a href="#c4"><span>4 · 增量还是迁移(三层证据)</span><span class="q">分</span></a>
-<a href="#c5"><span>5 · 增量来自谁、记了什么</span><span class="q">分</span></a>
-<a href="#c6"><span>6 · 为什么规模没打开(两道坎)</span><span class="q">分</span></a>
-<a href="#c7"><span>7 · 习惯与留存(含上限测算)</span><span class="q">分</span></a>
-<a href="#c8"><span>8 · 负向与护栏(分析下降)</span><span class="q">分</span></a>
-<a href="#c9"><span>9 · 战略判断与下一步</span><span class="q">总</span></a>
-<a href="#appendix"><span>附录 · 指标总表 / 来源 / 强度标记</span><span class="q">总</span></a>
+<a href="#c1"><span>0 · 先约定语言：三个"增量"不是一回事</span><span class="q">地基</span></a>
+<a href="#c2"><span>1 · 这个实验结论，可信吗？</span><span class="q">地基</span></a>
+<a href="#c3"><span>2 · 大盘到底发生了什么？</span><span class="q">推导</span></a>
+<a href="#c4"><span>3 · 点滴是新记录，还是搬家？</span><span class="q">核心</span></a>
+<a href="#c5"><span>4 · 新记录来自谁、记了什么？</span><span class="q">推导</span></a>
+<a href="#c6"><span>5 · 有信号，为什么没打开？</span><span class="q">推导</span></a>
+<a href="#c7"><span>6 · 会持续记、会留下来吗？</span><span class="q">推导</span></a>
+<a href="#c8"><span>7 · 有没有伤到原有业务？</span><span class="q">推导</span></a>
+<a href="#c9"><span>8 · 第二曲线成立吗？下一步？</span><span class="q">结论</span></a>
+<a href="#appendix"><span>附录 · 指标总表 / 口径 / 来源</span><span class="q">附</span></a>
 </div>
 </div>
 
-<h2 id="c1">1 · 判定标准与证据分层</h2>
-<p class="h2sub">先把概念定义清楚,避免"局部信号"被读成"全局结论"</p>
+<h2 id="c1">0 · 先约定语言：三个"增量"不是一回事</h2>
 <div class="card">
 <table>
 <tr><th>概念</th><th>定义</th><th>本报告能否证明</th></tr>
-<tr><td><b>内容/表达增量</b></td><td>记录了过去没记过的内容,或用了过去用不了的表达方式(语音/文字)</td><td class="cg">✅ 有证据(逐UID)</td></tr>
-<tr><td><b>入口迁移</b></td><td>同一次记录从旧入口(记录Tab)转到点滴,内容和量不变</td><td class="cn">部分可识别</td></tr>
-<tr><td><b>全局记录净增量</b></td><td>没有点滴就不会发生的记录 —— 体现为记录UV/条数/天数的净上涨</td><td class="cr">🔴 已验证:未出现(UV/PV直证)</td></tr>
-<tr><td><b>第二曲线</b></td><td>全局记录净增 + 新人群激活 + 个人/家庭内容 + 跨天习惯 + 留存,同时成立</td><td class="cr">❌ 仅方向信号</td></tr>
+<tr><td><b>内容/表达增量</b></td><td>记录了过去没记过的内容，或用了过去用不了的表达方式(语音/文字)</td><td class="cg">✅ 有证据(逐UID)</td></tr>
+<tr><td><b>入口迁移</b></td><td>同一次记录从旧入口(记录Tab)转到点滴，内容和量不变</td><td class="cn">部分可识别</td></tr>
+<tr><td><b>全局记录净增量</b></td><td>没有点滴就不会发生的记录 —— 体现为记录UV/条数/天数的净上涨</td><td class="cr">🔴 已验证：未出现(UV/PV直证)</td></tr>
+<tr><td><b>第二曲线</b></td><td>全局记录净增 + 新人群激活 + 个人/家庭内容 + 跨天习惯 + 留存，同时成立</td><td class="cr">❌ 仅方向信号</td></tr>
 </table>
-<div class="note"><b>关键区分:</b>本报告能证明"内容和表达增量的信号",也能直接验证实验期<b>全局记录净增量未出现</b>;但不能把前者外推为大盘增长。后文所有"增量"表述,均需明确是记录者内部的内容/表达变化,还是美柚整体记录规模的净变化。</div>
+<div class="note"><b>关键区分：</b>本报告能证明"内容和表达增量的信号"，也能直接验证实验期<b>全局记录净增量未出现</b>;但不能把前者外推为大盘增长。后文所有"增量"表述，均需明确是记录者内部的内容/表达变化，还是美柚整体记录规模的净变化。</div>
 </div>
 
-<h2 id="c2">2 · 实验可信度</h2>
-<p class="h2sub">因果结论的地基:两组实验前是否可比</p>
+<h2 id="c2">1 · 这个实验结论，可信吗？</h2>
 
 <div class="card">
 <div class="timeline">
-<div class="tlblock tlpre"><div class="tlt">实验前观察期</div><div class="tld">2026-07-18 ~ 08-18(约1个月,31天)</div><div class="tln">给用户打画像标签。注:窗口仅约一个月,"无记录"指"近约1个月无记录",非"注册以来从未记录"</div></div>
+<div class="tlblock tlpre"><div class="tlt">实验前观察期</div><div class="tld">2026-07-18 ~ 08-18(约1个月，31天)</div><div class="tln">给用户打画像标签。注：窗口仅约一个月，"无记录"指"近约1个月无记录"，非"注册以来从未记录"</div></div>
 <div class="tlarrow">→</div>
-<div class="tlblock tlexp"><div class="tlt">实验期（截至 9.9日）</div><div class="tld">2026-08-18 ~ 09-09</div><div class="tln">实验组第三Tab=点滴,两控制组=原返现;前几天为灰度爬坡期</div></div>
+<div class="tlblock tlexp"><div class="tlt">实验期（截至 9.9日）</div><div class="tld">2026-08-18 ~ 09-09</div><div class="tln">实验组第三Tab=点滴，两控制组=原返现；前几天为灰度爬坡期</div></div>
 </div>
-<h3>M0 一致性:实验前两组高度均衡</h3>
+<h3>M0 一致性：实验前两组高度均衡</h3>
 <table>
 <tr><th>实验前维度</th><th>实验组</th><th>控制组</th></tr>
 <tr><td>活跃天数 / 访问频率</td><td>6.60 / 72.08</td><td>6.61 / 72.46</td></tr>
@@ -260,12 +337,11 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>使用时长(秒) / 记录tab点击</td><td>72.21 / 149,202</td><td>72.46 / 149,197</td></tr>
 <tr><td>分析页浏览(日均)</td><td>18,956</td><td>19,047</td></tr>
 </table>
-<div class="note good"><b>M0 通过 + A/A 稳定:</b>实验前各维度高度均衡,两个控制组之间差异极小。实验期出现的差异,<b>主要</b>可归因于第三Tab的变化 —— 但对小幅指标仍需结合爬坡期、样本量谨慎解读,不做绝对归因。<span style="color:#aaa;font-size:12px">(来源:45631/45686 及实验前分层包)</span></div>
+<div class="note good"><b>M0 通过 + A/A 稳定：</b>实验前各维度高度均衡，两个控制组之间差异极小。实验期出现的差异，<b>主要</b>可归因于第三Tab的变化 —— 但对小幅指标仍需结合爬坡期、样本量谨慎解读，不做绝对归因。<span style="color:#aaa;font-size:12px">(来源：45631/45686 及实验前分层包)</span></div>
 </div>
-<div class="evtag ev1">本章证据强度:已验证(实验设计与前测平衡)</div>
+<div class="evtag ev1">本章证据强度：已验证(实验设计与前测平衡)</div>
 
-<h2 id="c3">3 · 点滴上线后,大盘发生了什么</h2>
-<p class="h2sub">先呈现完整结果,建立全篇要解释的矛盾</p>
+<h2 id="c3">2 · 点滴上线后，大盘到底发生了什么？</h2>
 
 <div class="card">
 <table>
@@ -279,26 +355,35 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>分析用户占DAU比</td><td class="neg">显著下降</td><td class="neg">−0.43pp / −4.79%</td><td>p&lt;0.01·绝对UV同步下降</td></tr>
 <tr><td>点滴主动记录规模</td><td>很小</td><td>1,590人(占全部记录者0.11%)</td><td>事实</td></tr>
 </table>
-<div class="note"><b>全篇要解释的矛盾:</b>为什么<b>记录规模没有增加</b>,但<b>留存和时长上涨</b>、<b>分析却下降</b>?后续各章逐层拆解。</div>
+<div class="note"><b>全篇要解释的矛盾：</b>为什么<b>记录规模没有增加</b>，但<b>留存和时长上涨</b>、<b>分析却下降</b>?后续各章逐层拆解。</div>
 </div>
-<div class="evtag ev1">本章证据强度:已验证(三组ITT结果)</div>
+<div class="evtag ev1">本章证据强度：已验证(三组ITT结果)</div>
 
-<h2 id="c4">4 · 核心问题:点滴是增量还是迁移</h2>
-<p class="h2sub">按三层证据由内到外:点滴内产生了多少 → 记录者的新内容信号 → 全局是否净增</p>
+<h2 id="c4">3 ·【核心问题】点滴是创造了新记录，还是只是搬了个家？</h2>
 
-<h3>第一层:点滴内部产生的记录(事实)</h3>
+<h3>第一层：点滴内部产生的记录</h3>
 <div class="card">
-<p class="tx" style="margin-top:0">实验期点滴主动记录 <b>1,590 人</b>(不含被动同步)。逐 UID 与实验前记录比对,归为四类:</p>
-<div class="tri">
-<div class="tcard tg"><div class="tn">36.8%</div><div class="tl">① 近期无记录激活</div><div class="td">近约1个月无记录,点滴里开始记</div></div>
-<div class="tcard tg2"><div class="tn">34.7%</div><div class="tl">② 新场景</div><div class="td">记了实验前没记过的内容</div></div>
-<div class="tcard ta"><div class="tn">23.3%</div><div class="tl">③ 表达升级</div><div class="td">旧内容,但用语音/文字</div></div>
-<div class="tcard tr2"><div class="tn">5.2%</div><div class="tl">④ 纯迁移</div><div class="td">旧内容+快捷,纯搬家</div></div>
+<p class="tx" style="margin-top:0">实验期点滴主动记录 <b>1,590 人</b>(不含被动同步)。逐 UID 与实验前记录比对，归为四类：</p>
+<div class="bracket">
+<span class="bk-l" style="width:94.8%">94.8% · 非纯迁移(含增量信号)</span>
+<span class="bk-r" style="width:5.2%">纯搬家</span>
 </div>
-<div class="note warn"><b>准确表述:在 1,590 名记录者中,94.8% 未被识别为"旧内容+快捷方式"的纯迁移。</b>其中含近期无记录、新内容、新表达三类信号。<b>但注意:</b>"表达升级"(23.3%)可能仍是同一次经期记录换了入口,只是表达更丰富 —— 它有产品价值,但<b>不一定增加记录UV/条数/天数</b>。因此这 94.8% 是<b>"记录者内部的非迁移比例",不能等同于"全局净增量"。</b></div>
+<div class="stack">
+<div class="seg s1" style="width:36.8%">36.8%<small>无记录激活</small></div>
+<div class="seg s2" style="width:34.7%">34.7%<small>新场景</small></div>
+<div class="seg s3" style="width:23.3%">23.3%<small>表达升级</small></div>
+<div class="seg s4" style="width:5.2%">5.2%</div>
+</div>
+<div class="catlg">
+<div class="clg"><span class="clgdot s1"></span><span><span class="clgnm">① 近期无记录激活</span> <span class="clgd">近1个月无记录，点滴里开始记</span></span><span class="clgpct" style="color:#2e9e5b">36.8%<span class="gchip g-hi">真增量</span></span></div>
+<div class="clg"><span class="clgdot s2"></span><span><span class="clgnm">② 新场景</span> <span class="clgd">记了实验前没记过的内容</span></span><span class="clgpct" style="color:#4caf50">34.7%<span class="gchip g-hi">真增量</span></span></div>
+<div class="clg"><span class="clgdot s3"></span><span><span class="clgnm">③ 表达升级</span> <span class="clgd">旧内容，换语音/文字</span></span><span class="clgpct" style="color:#ff9800">23.3%<span class="gchip g-mid">半增量</span></span></div>
+<div class="clg"><span class="clgdot s4"></span><span><span class="clgnm">④ 纯迁移</span> <span class="clgd">旧内容+快捷，纯搬家</span></span><span class="clgpct" style="color:#c62828">5.2%<span class="gchip g-lo">纯搬家</span></span></div>
+</div>
+<div class="note warn"><b>在 1,590 名记录者中，94.8% 未被识别为"旧内容+快捷方式"的纯迁移。</b>其中含近期无记录、新内容、新表达三类信号。<b>但注意：</b>"表达升级"(23.3%)可能仍是同一次经期记录换了入口，只是表达更丰富 —— 它有产品价值，但<b>不一定增加记录UV/条数/天数</b>。因此这 94.8% 是<b>"记录者内部的非迁移比例"，不能等同于"全局净增量"。</b></div>
 </div>
 
-<h3>第二层:记录者的新内容信号(仅限记录者)</h3>
+<h3>第二层：记录者的新内容信号(仅限记录者)</h3>
 <div class="card">
 <table>
 <tr><th>内容大类</th><th>这批人实验前·记录Tab</th><th>这批人·点滴内</th></tr>
@@ -306,52 +391,52 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>个人生活(情绪/体重/饮食/好习惯/日记)</td><td>15.6%</td><td>34.6%</td></tr>
 <tr><td colspan="3" style="text-align:left;color:#888;font-size:12px"><sup>*</sup>女性健康=大姨妈来了/走了+流量+月经颜色+痛经+症状+爱爱+白带+体温</td></tr>
 </table>
-<div class="note"><b>同一批记录者,个人内容占比从 15.6% 升到 34.6%(全量7,013条实验前记录比对)。</b>这是"内容/表达增量"的信号,<b>但仅限这 1,590 名记录者内部的结构变化 —— 是占比上涨,不是绝对量上涨。</b></div>
+<div class="note"><b>同一批记录者，个人内容占比从 15.6% 升到 34.6%(全量7,013条实验前记录比对)。</b>这是"内容/表达增量"的信号，<b>但仅限这 1,590 名记录者内部的结构变化 —— 是占比上涨，不是绝对量上涨。</b></div>
 </div>
 
 <div class="card" style="background:#F4FBF4;border-color:#cde9cd">
-<h3 style="margin-top:0;color:#2e7d32">具体UID的前后行为(个案佐证 · 点击展开看真实记录)</h3>
+<h3 style="margin-top:0;color:#2e7d32">具体 UID 的前后行为</h3>
 <p class="tx" style="margin-top:0">逐 UID 核对"实验前记录Tab记什么 → 点滴记什么"。点击每条展开查看真实记录样本(脱敏):</p>
 
 <div class="cases">
 <details class="ucase"><summary><b>601469362</b> <span class="ctag">近1个月0记录 → 点滴12天记体重+情绪</span><span class="cdays">15条</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>近1个月无任何记录<br><b>点滴记录样本:</b>「体重:52.00公斤」「心情:一般」…(连续记体重+情绪)</div></details>
+<div class="cbody"><b>实验前记录Tab:</b>近1个月无任何记录<br><b>点滴记录样本：</b>「体重：52.00公斤」「心情：一般」…(连续记体重+情绪)</div></details>
 
 <details class="ucase"><summary><b>475799088</b> <span class="ctag">只勾大姨妈 → 点滴记饮食</span><span class="cdays">连续5天·16条</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>2天,只勾"大姨妈来了"<br><b>点滴记录样本:</b>「饮食:全麦吐司,煎蛋,番茄,紫甘蓝,黄瓜」「饮食:玉米,鸡蛋」「饮食:香蕉」…</div></details>
+<div class="cbody"><b>实验前记录Tab:</b>2天，只勾"大姨妈来了"<br><b>点滴记录样本：</b>「饮食：全麦吐司，煎蛋，番茄，紫甘蓝，黄瓜」「饮食：玉米，鸡蛋」「饮食：香蕉」…</div></details>
 
 <details class="ucase"><summary><b>502955298</b> <span class="ctag">只记经期 → 点滴连续记体重</span><span class="cdays">连续9天</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>只记经期(流量/大姨妈),从没记过体重<br><b>点滴记录样本:</b>「体重:74.05斤」「体重:73.35公斤」「体重:73.20公斤」…(逐日追踪)</div></details>
+<div class="cbody"><b>实验前记录Tab:</b>只记经期(流量/大姨妈)，从没记过体重<br><b>点滴记录样本：</b>「体重：74.05斤」「体重：73.35公斤」「体重：73.20公斤」…(逐日追踪)</div></details>
 
 <details class="ucase"><summary><b>642170968</b> <span class="ctag">低频 → 点滴体重打卡</span><span class="cdays">连续8天·12条</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>1天,只记大姨妈<br><b>点滴记录样本:</b>「体重:56.70斤」「体重:56.45斤」「体重:56.30斤」…(每日称重)</div></details>
+<div class="cbody"><b>实验前记录Tab:</b>1天，只记大姨妈<br><b>点滴记录样本：</b>「体重：56.70斤」「体重：56.45斤」「体重：56.30斤」…(每日称重)</div></details>
 
 <details class="ucase"><summary><b>637465533</b> <span class="ctag">勾选 → 文字表达经期感受</span><span class="cdays">10条</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>勾选式记经期<br><b>点滴记录样本:</b>「我服了 能不能来的时候有点预告」「气死我了 经期太麻烦」「开学来月经更麻烦」…(勾选框承载不了的情绪表达)</div></details>
+<div class="cbody"><b>实验前记录Tab:</b>勾选式记经期<br><b>点滴记录样本：</b>「我服了 能不能来的时候有点预告」「气死我了 经期太麻烦」「开学来月经更麻烦」…(勾选框承载不了的情绪表达)</div></details>
 
-<details class="ucase rev"><summary><b>529662987</b> <span class="ctag rev">反例:全能高频 → 只是换入口</span><span class="cdays">19条</span></summary>
-<div class="cbody"><b>实验前记录Tab:</b>天天记体重等11项(本就全能高频)<br><b>点滴记录样本:</b>「体重:50.40公斤」「体重:49.80公斤」…(旧习惯换入口=纯迁移)</div></details>
+<details class="ucase rev"><summary><b>529662987</b> <span class="ctag rev">反例：全能高频 → 只是换入口</span><span class="cdays">19条</span></summary>
+<div class="cbody"><b>实验前记录Tab:</b>天天记体重等11项(本就全能高频)<br><b>点滴记录样本：</b>「体重：50.40公斤」「体重：49.80公斤」…(旧习惯换入口=纯迁移)</div></details>
 </div>
 
-<div class="note good"><b>个案印证机制:实验前越是零记录/只勾经期的人,点滴越给她解锁"体重/饮食/情绪"这类记录Tab没承载过的内容;实验前就全能高频的人(反例529662987)则只是换入口。</b>点滴的新内容,主要来自被记录Tab形态压抑的低频/沉默用户 —— 但仅是记录者内部的个案信号,不代表大盘。<span style="color:#aaa;font-size:12px">(涉及敏感健康内容已脱敏,仅示例性展示)</span></div>
+<div class="note good"><b>个案印证机制：实验前越是零记录/只勾经期的人，点滴越给她解锁"体重/饮食/情绪"这类记录Tab没承载过的内容；实验前就全能高频的人(反例529662987)则只是换入口。</b>点滴的新内容，主要来自被记录Tab形态压抑的低频/沉默用户 —— 但仅是记录者内部的个案信号，不代表大盘。<span style="color:#aaa;font-size:12px">(涉及敏感健康内容已脱敏，仅示例性展示)</span></div>
 </div>
 
-<h3>第三层:全局记录净增量(决定性证据已补)</h3>
+<h3>第三层：全局记录净增量</h3>
 <div class="card">
 <table>
 <tr><th>验证</th><th>实验组</th><th>控制组</th><th>结论</th></tr>
-<tr><td><b>全局记录 UV(去重记录用户)</b></td><td><b>1,201,262</b></td><td><b>1,201,951</b></td><td><b>−0.06%</b></td></tr>
-<tr><td><b>全局记录 PV(记录条数)</b></td><td><b>42,069,259</b></td><td><b>42,297,631</b></td><td><b>−0.54%</b></td></tr>
-<tr><td>记录用户占DAU比</td><td>34.02%</td><td>34.15%</td><td>−0.13pp / −0.38%</td></tr>
+<tr><td><b>全局记录 UV(去重记录用户)</b></td><td><b>1,201,262</b></td><td><b>1,201,951</b></td><td class="neg"><b>−0.06%</b></td></tr>
+<tr><td><b>全局记录 PV(记录条数)</b></td><td><b>42,069,259</b></td><td><b>42,297,631</b></td><td class="neg"><b>−0.54%</b></td></tr>
+<tr><td>记录用户占DAU比</td><td>34.02%</td><td>34.15%</td><td class="neg">−0.13pp / −0.38%</td></tr>
 <tr><td>记录tab记录用户数</td><td>1,418,876</td><td>1,421,135</td><td>持平</td></tr>
 <tr><td>日历记录天数分布</td><td colspan="2" style="text-align:center">卡方 p=0.63</td><td>无差异</td></tr>
 </table>
-<div class="note"><b>全局记录净增量:观察期内明确未出现(决定性证据)。</b>实验组全局记录 UV(去重记录用户)与控制组几乎相同(−0.06%),记录 PV(条数)实验组还略低(−0.54%)。两项均为全局记录口径,且不含已删除记录。<b>因此当前没有观察到点滴给美柚带来全局记录量增长。</b>记录tab记录人数也持平,未见大规模迁移。这使第二曲线"规模"这一必要条件有了直接判定:局部有质变信号,但尚未转化为大盘数量增长。<span style="color:#999;font-size:12px">(口径:2026-08-18~09-09;这里判定的是"未观察到业务净增",不是统计学意义上证明真实效应严格等于0。如需等效性结论,仍需补置信区间/等效性检验。)</span></div>
+<div class="note"><b>全局记录净增量：观察期内明确未出现(决定性证据)。</b>实验组全局记录 UV(去重记录用户)与控制组几乎相同(<span class="neg">−0.06%</span>)，记录 PV(条数)实验组还略低(<span class="neg">−0.54%</span>)。两项均为全局记录口径，且不含已删除记录。<b>因此当前没有观察到点滴给美柚带来全局记录量增长。</b>记录tab记录人数也持平，未见大规模迁移。这使第二曲线"规模"这一必要条件有了直接判定：局部有质变信号，但尚未转化为大盘数量增长。<span style="color:#999;font-size:12px">(口径：2026-08-18~09-09;这里判定的是"未观察到业务净增"，不是统计学意义上证明真实效应严格等于0。如需等效性结论，仍需补置信区间/等效性检验。)</span></div>
 </div>
 
 <div class="card" style="background:#F4FBF4;border-color:#cde9cd">
-<h3 style="margin-top:0;color:#2e7d32">并用证据:同一批人在两个入口按内容分工</h3>
-<p class="tx" style="margin-top:0">1,500 名点滴记录者(约占记录者 94%)实验期在记录Tab也记了 10,404 条(人均约7条)—— <b>他们没有离开记录Tab,是两边并用。</b>而且两个入口出现内容分工:</p>
+<h3 style="margin-top:0;color:#2e7d32">并用证据：同一批人在两个入口按内容分工</h3>
+<p class="tx" style="margin-top:0">1,500 名点滴记录者(约占记录者 94%)实验期在记录Tab也记了 10,404 条(人均约7条)—— <b>她们没有离开记录Tab，是两边并用。</b>而且两个入口出现内容分工：</p>
 <table>
 <tr><th>记录项</th><th>实验前·记录Tab</th><th>实验期·记录Tab</th><th>点滴内</th><th>倾向</th></tr>
 <tr><td>大姨妈来了/走了</td><td>25.1%</td><td>24.4%</td><td>22.6%</td><td>两边都记</td></tr>
@@ -360,21 +445,20 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>情绪/心情</td><td>4.5%</td><td>8.0%</td><td><b>15.2%</b></td><td>偏点滴</td></tr>
 <tr><td>体重</td><td>3.2%</td><td>5.7%</td><td><b>14.2%</b></td><td>偏点滴</td></tr>
 <tr><td>饮食</td><td>≈0</td><td>≈0(表单无此项)</td><td>4.0%</td><td>仅点滴</td></tr>
-<tr><td colspan="5" style="text-align:left;color:#888;font-size:12px"><b>分类口径:</b>女性健康=大姨妈来了/走了+流量+月经颜色+痛经+症状+爱爱+白带+体温;个人生活=心情+体重+好习惯+日记+未来事项(+点滴独有的饮食);其余(记录具体时间/便便)为中性。<br>汇总占比:女性健康 实验前记录Tab 84.4% → 实验期 72.9% → 点滴 54.5%;个人生活 15.6% → 19.5% → 34.6%。</td></tr>
+<tr><td colspan="5" style="text-align:left;color:#888;font-size:12px"><b>分类口径：</b>女性健康=大姨妈来了/走了+流量+月经颜色+痛经+症状+爱爱+白带+体温；个人生活=心情+体重+好习惯+日记+未来事项(+点滴独有的饮食);其余(记录具体时间/便便)为中性。<br>汇总占比：女性健康 实验前记录Tab 84.4% → 实验期 72.9% → 点滴 54.5%;个人生活 15.6% → 19.5% → 34.6%。</td></tr>
 </table>
-<div class="note good"><b>记录项越标准化(经期四件套占记录Tab 56.6%),越留在记录Tab用勾选式记;越需要自由表达(症状/情绪/体重/饮食),越去点滴。</b>同一批人把"月经来了/走了"这种一键勾选留在记录Tab,把描述型、追踪型内容放到点滴。两个入口形成内容分工,不是抢同一块 —— 这是"非替代、真并用"的直接证据(比"记录Tab人数没少"更进一步)。记录Tab里个人内容也从 15.6%→19.5%,但可能含自选择,不宜过度解读为"点滴带动"。</div>
+<div class="note good"><b>记录项越标准化(经期四件套占记录Tab 56.6%)，越留在记录Tab用勾选式记；越需要自由表达(症状/情绪/体重/饮食)，越去点滴。</b>同一批人把"月经来了/走了"这种一键勾选留在记录Tab，把描述型、追踪型内容放到点滴。两个入口形成内容分工，不是抢同一块 —— 这是"非替代、真并用"的直接证据(比"记录Tab人数没少"更进一步)。记录Tab里个人内容也从 15.6%→19.5%，但可能含自选择，不宜过度解读为"点滴带动"。</div>
 </div>
 <div class="verdict"><h3>本章判断</h3>
-<p><span class="hl">局部内容增量信号:</span>成立 —— 记录者中新内容/新表达真实存在。</p>
-<p><span class="hl">整体数量净增量:</span>未出现 —— 全局记录 UV −0.06%、PV −0.54%,大盘规模持平甚至微跌。</p>
-<p style="margin-top:12px;font-size:15px;color:#fff"><b>点滴目前是"质有信号、量未起来":记录者内部质变明确,但还没转化为美柚整体记录量的增长。</b></p>
+<p><span class="hl">局部内容增量信号：</span>成立 —— 记录者中新内容/新表达真实存在。</p>
+<p><span class="hl">整体数量净增量：</span>未出现 —— 全局记录 UV <span class="neg">−0.06%</span>、PV <span class="neg">−0.54%</span>，大盘规模持平甚至微跌。</p>
+<p style="margin-top:12px;font-size:15px;color:#fff"><b>点滴目前是"质有信号、量未起来"：记录者内部质变明确，但还没转化为美柚整体记录量的增长。</b></p>
 </div>
-<div class="evtag ev2">本章证据强度:①③已验证(事实/大盘) · ②信号(仅限记录者,非全局)</div>
+<div class="evtag ev2">本章证据强度：①③已验证(事实/大盘) · ②信号(仅限记录者，非全局)</div>
 
-<h2 id="c5">5 · 增量信号来自谁、记录了什么</h2>
-<p class="h2sub">画像 · 入口 · 内容 · 对照 —— 案例仅作解释,不代表整体</p>
+<h2 id="c5">4 · 这些新记录，来自谁、记的是什么？</h2>
 
-<h3>谁更容易成为记录者(记录者画像·仅限记录者)</h3>
+<h3>谁更容易成为记录者</h3>
 <div class="card">
 <table>
 <tr><th>实验前特征</th><th>记录者中占比</th><th>大盘占比<sup>*</sup></th><th>相对(超配)</th></tr>
@@ -384,7 +468,7 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>非记录tab用户</td><td>39.9%</td><td>29.7%</td><td><span class="oc">1.3×</span></td></tr>
 <tr><td>低频记录者(≤2天)</td><td>30.4%</td><td>50.8%</td><td><span class="low">0.6×</span></td></tr>
 </table>
-<div class="note"><b>记录者主要是新用户、高频老手、分析用户;低频用户低配。两点解读边界:</b>① "新用户超配7.4×"是记录者<b>构成</b>特征,尚未拆到"曝光→点击→记录"哪一步,不能直接推"点滴尤其适合新用户";<sup>*</sup>"大盘"=全体实验组入组用户(161.5万)中该特征的占比。② "新用户"与"近期无记录"高度重叠,两类证据不宜相加。</div>
+<div class="note"><b>记录者主要是新用户、高频老手、分析用户；低频用户低配。两点解读边界：</b>① "新用户超配7.4×"是记录者<b>构成</b>特征，尚未拆到"曝光→点击→记录"哪一步，不能直接推"点滴尤其适合新用户";<sup>*</sup>"大盘"=全体实验组入组用户(161.5万)中该特征的占比。② "新用户"与"近期无记录"高度重叠，两类证据不宜相加。</div>
 </div>
 
 <h3>从哪进来 —— 两套入口口径</h3>
@@ -397,7 +481,7 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <div class="bar"><div class="lb">红点拉入</div><div class="track"><div class="fill" style="width:18.6%;background:#ff85ab">18.6%</div></div><div class="vv">296人</div></div>
 <div class="bar"><div class="lb">横幅∪红点</div><div class="track"><div class="fill" style="width:53.6%;background:#e91e63">53.6%</div></div><div class="vv">853人</div></div>
 <div class="bar"><div class="lb">纯直入(自己点tab)</div><div class="track"><div class="fill" style="width:46.4%;background:#bbb">46.4%</div></div><div class="vv">737人</div></div>
-<div class="note"><b>首页是最大的Tab来源(55%);运营位上,53.6%的记录者靠横幅/红点拉动、46.4%自己点进来。</b>横幅是最强钩子(38.7%),但横幅拉来的人 69% 记经期(带经期场景来);红点拉来的人个人生活内容占 46%,更精准 —— <b>想放大个人记录,红点比横幅更有效。</b>红点转化率(22.7%,红点曝光→点击)高于<b>整体曝光→点击率(13.2%,即全部看到Tab的人中点击的比例)</b>,是"小而精"的引导,值得扩大投放。<span style="color:#aaa;font-size:12px">(两套口径不同:①是Tab切换来源,②是运营位钩子,不可相加)</span></div>
+<div class="note"><b>首页是最大的Tab来源(55%);运营位上，53.6%的记录者靠横幅/红点拉动、46.4%自己点进来。</b>横幅是最强钩子(38.7%)，但横幅拉来的人 69% 记经期(带经期场景来);红点拉来的人个人生活内容占 46%，更精准 —— <b>想放大个人记录，红点比横幅更有效。</b>红点转化率(22.7%，红点曝光→点击)高于<b>整体曝光→点击率(13.2%，即全部看到Tab的人中点击的比例)</b>，是"小而精"的引导，值得扩大投放。<span style="color:#aaa;font-size:12px">(两套口径不同：①是Tab切换来源，②是运营位钩子，不可相加)</span></div>
 </div>
 
 <h3>记录了什么 —— 内容主题分布</h3>
@@ -407,31 +491,32 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <div class="bar"><div class="lb">情绪</div><div class="track"><div class="fill" style="width:48%;background:#ff9800">15.2%</div></div></div>
 <div class="bar"><div class="lb">体重</div><div class="track"><div class="fill" style="width:45%;background:#ffa726">14.2%</div></div></div>
 <div class="bar"><div class="lb">饮食</div><div class="track"><div class="fill" style="width:13%;background:#ffb74d">4.0%</div></div></div>
-<div class="note"><b>个人生活类(情绪/体重/饮食)合计约 34.6%,是这批记录者实验前在记录Tab很少记的内容(个人内容仅占其实验前记录的15.6%)。</b>其中体重在点滴里被放大最明显(记录Tab里仅4%→点滴14.2%)。</div>
+<div class="note"><b>个人生活类(情绪/体重/饮食)合计约 34.6%，是这批记录者实验前在记录Tab很少记的内容(个人内容仅占其实验前记录的15.6%)。</b>其中体重在点滴里被放大最明显(记录Tab里仅4%→点滴14.2%)。</div>
 </div>
 
-<h3>一个记录Tab结构上做不到的新场景:替家人记录</h3>
+<h3>一个记录Tab结构上做不到的新场景：替家人记录</h3>
 <div class="card" style="background:#F4FBF4;border-color:#cde9cd">
-<p class="tx" style="margin-top:0">在真实记录中发现:<b>有用户在用点滴替女儿记录初潮和月经周期</b>("女儿第一次来月经…""大女儿…初潮"),也有替妹妹记经期的。</p>
-<div class="note good"><b>这是记录Tab在数据结构上无法满足的场景。</b>记录Tab的经期记录绑定用户本人账号,只能记"我的";而青春期女儿往往还没有自己的账号,妈妈需要替她跟踪初潮和周期。点滴的自由输入天然支持"给谁记"—— 这是美柚从"记录我自己"走向"记录家庭女性成员健康"的<b>第一个真实信号</b>。规模还很小(含家人主体线索的记录约25条、占1%,其中"替女儿/妹妹记月经"约5-6条),但方向上是第二曲线"家庭记录"维度的实锤。<span style="color:#aaa;font-size:12px">(涉及未成年人健康信息,此处仅描述场景,不展示具体记录原文)</span></div>
+<p class="tx" style="margin-top:0">在真实记录中发现：<b>有用户在用点滴替女儿记录初潮和月经周期</b>("女儿第一次来月经…""大女儿…初潮")，也有替妹妹记经期的。</p>
+<div class="note good"><b>这是记录Tab在数据结构上无法满足的场景。</b>记录Tab的经期记录绑定用户本人账号，只能记"我的";而青春期女儿往往还没有自己的账号，妈妈需要替她跟踪初潮和周期。点滴的自由输入天然支持"给谁记"—— 这是美柚从"记录我自己"走向"记录家庭女性成员健康"的<b>第一个真实信号</b>。规模还很小(含家人主体线索的记录约25条、占1%，其中"替女儿/妹妹记月经"约5-6条)，但方向上是第二曲线"家庭记录"维度的实锤。<span style="color:#aaa;font-size:12px">(涉及未成年人健康信息，此处仅描述场景，不展示具体记录原文)</span></div>
 </div>
 
-<h3>记录者 vs 未记录者对照:"点了不记"是习惯,还是门槛?</h3>
+<h3>记录者 vs 未记录者："点了不记"是没需求，还是被挡住了？</h3>
 <div class="card">
-<p class="tx" style="margin-top:0">把 18 万"只看不记"的人和 1,590 名记录者对照,看两者画像差异:</p>
-<table>
-<tr><th>维度</th><th>记录者(1,590)</th><th>未记录者(约18万)</th></tr>
-<tr><td>新用户占比</td><td>18.3%</td><td>6.2%</td></tr>
-<tr><td>低频(≤2天)占比</td><td>45%</td><td>56%</td></tr>
-<tr><td>进点滴后记录转化(按习惯)</td><td colspan="2">低频0.56% → 高频1.28%(随记录习惯递增,高频是低频2.3倍)</td></tr>
-<tr><td>入口转化</td><td colspan="2">红点进入7.49% &gt; 横幅进入6.31%</td></tr>
-</table>
-<div class="note"><b>"点了不记"与记录习惯强相关:未记录者里 56% 是低频(记录者里仅 45%),新用户占比也低得多(6.2% vs 18.3%)。本来就爱记录的人进点滴后更会记。</b>但习惯不能单独解释 —— 低频用户可能同时有内容需求弱、价值认知低、首屏体验等因素。<b>一个反转:低频用户整体"触达难"(卡在第一道坎),但少数进来的低频用户复记潜力反而强(如642170968:实验前仅1天记录→点滴连续8天记体重)—— 问题不在没需求,在两道坎挡住了她们。</b></div>
+<p class="tx" style="margin-top:0">把 18 万"只看不记"的人和 1,590 名记录者对照 ——</p>
+<div class="vsg">
+<div class="vsrow"><div class="vsk">新用户占比</div>
+<div class="vsb"><span class="vslab">记录者</span><div class="vstrack"><div class="vsfill r" style="width:82%">18.3%</div></div></div>
+<div class="vsb"><span class="vslab">未记录者</span><div class="vstrack"><div class="vsfill g" style="width:28%">6.2%</div></div></div></div>
+<div class="vsrow"><div class="vsk">低频记录用户（记录天数≤2 天）占比</div>
+<div class="vsb"><span class="vslab">记录者</span><div class="vstrack"><div class="vsfill r" style="width:66%">45%</div></div></div>
+<div class="vsb"><span class="vslab">未记录者</span><div class="vstrack"><div class="vsfill g" style="width:82%">56%</div></div></div></div>
 </div>
-<div class="evtag ev2">本章证据强度:信号(记录者画像/内容,不外推大盘)</div>
+<p class="tx">表面看：记录者本就更"能记"(新用户更多、低频更少),"点了不记"像是习惯问题。</p>
+<div class="note good"><b>但真正的发现是一个反转 —— 低频用户不是没需求，是被两道坎挡住了。</b>低频用户整体"触达难"，卡在第一道坎(看到不点);可一旦挤进来，复记潜力反而很强 —— 例如用户 642170968，实验前仅 1 天记录，进点滴后连续 8 天记体重。<b>所以症结不在"没人想记"，而在两道坎把想记的人挡在了外面。</b><br>佐证：进点滴后记录转化随习惯递增(低频 0.56% → 高频 1.28%，高频是低频 2.3 倍);入口上红点进入转化(7.49%)高于横幅(6.31%)。</div>
+</div>
+<div class="evtag ev2">本章证据强度：信号(记录者画像/内容，不外推大盘)</div>
 
-<h2 id="c6">6 · 为什么规模没有打开:两道转化坎</h2>
-<p class="h2sub">漏斗定位"哪里流失"(事实),原因分三档呈现</p>
+<h2 id="c6">5 · 有信号，那规模为什么没打开？</h2>
 
 <div class="card">
 <p class="tx" style="margin-top:0;color:#888;font-size:13px">每 1,000 个启动 App 的人 ——</p>
@@ -445,89 +530,86 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 </div>
 </div>
 <div class="twocol">
-<div class="lostcard l1"><div class="lh">第一道坎 · 看到了不点</div><div class="ln">125 万</div><div class="ld">曝光但没点击,占曝光86.8%(事实)</div></div>
-<div class="lostcard l2"><div class="lh">第二道坎 · 点了不记</div><div class="ln">18 万</div><div class="ld">浏览但没记录,占浏览99.1%(事实)</div></div>
+<div class="lostcard l1"><div class="lh">第一道坎 · 看到了不点</div><div class="ln">125 万</div><div class="ld">曝光但没点击，占曝光86.8%(事实)</div></div>
+<div class="lostcard l2"><div class="lh">第二道坎 · 点了不记</div><div class="ln">18 万</div><div class="ld">浏览但没记录，占浏览99.1%(事实)</div></div>
 </div>
 <div class="card">
-<h3 style="margin-top:0">浏览者进点滴后看到/点了什么(时间轴行为)</h3>
+<h3 style="margin-top:0">浏览者进点滴后看到/点了什么</h3>
 <table>
 <tr><th>时间轴行为</th><th>数据</th></tr>
 <tr><td>记录卡片曝光占比</td><td>95.5%(浏览者看到的几乎全是"记录提取内容"卡片)</td></tr>
 <tr><td>时间轴反馈点击率</td><td>6.35%</td></tr>
 <tr><td>记录卡片/反馈点击(累计)</td><td>记录内容点击9,279次 / 反馈点击7,329次</td></tr>
 </table>
-<div class="note"><b>浏览者看到的时间轴 95.5% 是"记录卡片"(多为从记录Tab同步来的旧记录)—— 这正是"点了不记"的关键:第一屏全是自己早记过的内容,看不到"能记新东西"的价值。反馈点击率 6.35%,说明有一小群人在看AI反馈,但规模很小。</b></div>
+<div class="note"><b>浏览者看到的时间轴 95.5% 是"记录卡片"(多为从记录Tab同步来的旧记录)—— 这正是"点了不记"的关键：第一屏全是自己早记过的内容，看不到"能记新东西"的价值。反馈点击率 6.35%，说明有一小群人在看AI反馈，但规模很小。<b>更值得警惕的是：用户很可能没真正理解点滴能记什么、首屏也缺乏吸引力、甚至没找到记录入口 —— 这正是浏览→记录坎的核心。</b></div>
 </div>
-<div class="note"><b>注:</b>"点击→浏览95.7%"只说明页面成功打开,<b>不能</b>说明用户理解了点滴、首屏有吸引力或找到了记录入口 —— 浏览体验质量需另测(停留时长、滚动深度、输入框曝光点击、退出位置)。</div>
 
-<h3>两道坎的原因(每条标注证据强度:✅已验证 / 🟡信号 / 🔴待验证)</h3>
+<h3>两道坎的原因</h3>
 <div class="card">
 <table>
 <tr><th>现象</th><th>原因(分档)</th><th>验证方法</th></tr>
-<tr><td>曝光后不点(125万)</td><td class="cr">待验证:第三Tab 位置本身低点击(返现时代点击率也仅约3%),且实验组本就是"不用返现"的用户、对该位置有既有忽略习惯 —— 但无法排除点滴价值传达不足</td><td>新用户(无返现习惯)对比;入口位置实验</td></tr>
-<tr><td>浏览后不记(18万)</td><td class="ca">🟡 结论:首屏 95.5% 是从记录Tab同步来的旧记录卡片,用户看到的全是自己早记过的内容,get不到"能记新东西/有AI反馈"的价值</td><td>可用首屏内容(新内容前置)实验进一步量化提升空间</td></tr>
-<tr><td>记录习惯相关</td><td class="ca">信号:进点滴记录转化随实验前记录频率递增(低频0.56%→高频1.28%)</td><td>控制身份/版本/首屏内容后再看</td></tr>
-<tr><td>饮食完成率低(1.1%)</td><td class="cg">已验证:饮食记录项点击率仅2.37%,授权允许率79%(非授权卡点)</td><td>简化食物录入路径实验</td></tr>
+<tr><td>曝光后不点(125万)</td><td class="cr">待验证：第三Tab 位置本身低点击(返现 tab点击率也仅约3%)，且实验组本就是"不用返现"的用户、对该位置有既有忽略习惯 —— 但无法排除点滴价值传达不足</td><td>新用户(无返现习惯)对比；入口位置实验</td></tr>
+<tr><td>浏览后不记(18万)</td><td class="ca">🟡 结论：首屏 95.5% 是从记录Tab同步来的旧记录卡片，用户看到的全是自己早记过的内容，get不到"能记新东西/有AI反馈"的价值</td><td>可用首屏内容(新内容前置)实验进一步量化提升空间</td></tr>
+<tr><td>记录习惯相关</td><td class="ca">信号：进点滴记录转化随实验前记录频率递增(低频0.56%→高频1.28%)</td><td>控制身份/版本/首屏内容后再看</td></tr>
+<tr><td>饮食完成率低(1.1%)</td><td class="cg">已验证：饮食记录项点击率仅2.37%，授权允许率79%(非授权卡点)</td><td>简化食物录入路径实验</td></tr>
 </table>
 <div class="card">
-<h3 style="margin-top:0">"点了不记"的门槛:+号各记录项完成率</h3>
+<h3 style="margin-top:0">"点了不记"的门槛：+号各记录项完成率</h3>
 <div class="bar"><div class="lb">症状</div><div class="track"><div class="fill" style="width:88%;background:#2e9e5b">8.8%</div></div></div>
 <div class="bar"><div class="lb">心情</div><div class="track"><div class="fill" style="width:66%;background:#4caf50">6.6%</div></div></div>
 <div class="bar"><div class="lb">体重</div><div class="track"><div class="fill" style="width:27%;background:#ff9800">2.7%</div></div></div>
 <div class="bar"><div class="lb">饮食</div><div class="track"><div class="fill" style="width:11%;background:#c62828">1.1%</div></div></div>
-<div class="note"><b>点了+号后,不同记录项的完成率差异大:症状最易完成(8.8%),饮食最低(1.1%)。</b>饮食低不是授权问题(允许率79%),而是饮食记录项本身点击率低+录入路径繁琐。简化食物录入是明确的产品优化点。</div>
+<div class="note"><b>点了+号后，不同记录项的完成率差异大：症状最易完成(8.8%)，饮食最低(1.1%)。</b>饮食低不是授权问题(允许率79%)，而是饮食记录项本身点击率低+录入路径繁琐。简化食物录入是明确的产品优化点。</div>
 </div>
-<div class="note"><b>关于第一道坎的一个澄清:</b>实验组与控制组均圈选自"不使用返现"的用户,第三 Tab 对他们一直是低点击位置(返现时代点击率也仅约 3%,这批人更低)。所以"曝光高、点击低"部分反映的是<b>第三 Tab 位置的结构性低点击 + 这批用户的既有忽略习惯</b>,不能简单归因为"点滴不吸引人"。要区分"位置问题"和"点滴价值问题",需用无返现习惯包袱的新用户做对比。</div>
-<div class="note"><b>历史记录频率是当前能观察到的最强转化相关因素之一,但不能单独解释低转化</b> —— 低频用户可能同时有内容需求更弱、价值认知更低、身份/版本差异等。第一道坎的成因,现有数据无法完全归因:实验组本身不用返现、第三Tab对其一直是低点击位置(返现时代也仅约3%),这可能是结构性低点击而非"点滴特有问题";"同步旧内容"造成不记录仍是待验证假设。</div>
+<div class="note"><b>关于第一道坎的一个澄清：</b>实验组与控制组均圈选自"不使用返现"的用户，第三 Tab 对他们一直是低点击位置(返现 tab点击率也仅约 3%，这批人更低)。所以"曝光高、点击低"部分反映的是<b>第三 Tab 位置的结构性低点击 + 这批用户的既有忽略习惯</b>，不能简单归因为"点滴不吸引人"。要区分"位置问题"和"点滴价值问题"，需用无返现习惯包袱的新用户做对比。</div>
+<div class="note"><b>历史记录频率是当前能观察到的最强转化相关因素之一，但不能单独解释低转化</b> —— 低频用户可能同时有内容需求更弱、价值认知更低、身份/版本差异等。第一道坎的成因，现有数据无法完全归因：实验组本身不用返现、第三Tab对其一直是低点击位置(返现 tab也仅约3%)，这可能是结构性低点击而非"点滴特有问题";"同步旧内容"造成不记录仍是待验证假设。</div>
 </div>
-<div class="evtag ev3">本章证据强度:漏斗流失已验证 · 流失原因多为待验证假设</div>
+<div class="evtag ev3">本章证据强度：漏斗流失已验证 · 流失原因多为待验证假设</div>
 
-<h2 id="c7">7 · 习惯与留存</h2>
-<p class="h2sub">先看全局实验对照,再看点滴内部复记,最后判断留存机制</p>
+<h2 id="c7">6 · 记录的人，会持续记、会留下来吗？</h2>
 
-<h3>全局记录习惯:没有增强(实验对照)</h3>
+<h3>全局记录习惯：没有增强</h3>
 <div class="card">
 <table>
 <tr><th>指标</th><th>实验组</th><th>控制组1(检验基线)</th><th>净/相对</th><th>p值 / 功效</th></tr>
 <tr><td><b>记录用户7日活跃天数</b></td><td><b>1.30天</b></td><td><b>1.30天</b></td><td>约0天 / +0.33%</td><td>0.790 / 0.06</td></tr>
 </table>
-<div class="note"><b>全局记录习惯没有增强。</b>实验组与控制组的记录用户7日活跃天数均为1.30天,差异不显著(p=0.790)。结合全局记录UV −0.06%、PV −0.54%,可以形成完整证据链:<b>点滴既没有扩大整体记录规模,也没有提升全局记录频率或跨天活跃。</b></div>
+<div class="note"><b>全局记录习惯没有增强。</b>实验组与控制组的记录用户7日活跃天数均为1.30天，差异不显著(p=0.790)。结合全局记录UV <span class="neg">−0.06%</span>、PV <span class="neg">−0.54%</span>，可以形成完整证据链：<b>点滴既没有扩大整体记录规模，也没有提升全局记录频率或跨天活跃。</b></div>
 </div>
 
-<h3>点滴内部跨天习惯:很弱</h3>
+<h3>点滴内部跨天习惯：很弱</h3>
 <div class="card">
-<p class="tx" style="margin-top:0">1,590 名记录者中,跨天复记(≥2天有记录)仅 <b>117 人</b>,复记率 <b>7.1%</b>;1,529 人只记 1 天。会复记的人主记内容是<b>症状/情绪/体重/饮食(连续追踪型)</b>—— 这类"今天记、明天想看趋势"的内容,是复记的核心;而经期(周期性、不需天天记)在复记者中反而少。这提示留存机制候选是"日常追踪型内容",但样本仅117人,不能作定论。</p>
-<div class="note"><b>点滴内部跨天记录习惯同样很弱</b>(7.1%)。连续追踪型内容在复记者中更常见,是<b>值得验证的留存机制候选</b> —— 但样本仅百人级,不能作为定论。全局实验对照与点滴内部复记结果方向一致。</div>
+<p class="tx" style="margin-top:0">1,590 名记录者中，跨天复记(≥2天有记录)仅 <b>117 人</b>，复记率 <b>7.1%</b>;1,529 人只记 1 天。会复记的人主记内容是<b>症状/情绪/体重/饮食(连续追踪型)</b>—— 这类"今天记、明天想看趋势"的内容，是复记的核心；而经期(周期性、不需天天记)在复记者中反而少。这提示留存机制候选是"日常追踪型内容"，但样本仅117人，不能作定论。</p>
+<div class="note"><b>点滴内部跨天记录习惯同样很弱</b>(7.1%)。连续追踪型内容在复记者中更常见，是<b>值得验证的留存机制候选</b> —— 但样本仅百人级，不能作为定论。全局实验对照与点滴内部复记结果方向一致。</div>
 </div>
 
-<h3>留存:小幅正向(实验结果),但机制未定</h3>
+<h3>留存：小幅正向，但机制未定</h3>
 <div class="card">
 <table>
 <tr><th>指标</th><th>实验组</th><th>控制组1(检验基线)</th><th>净/相对</th></tr>
 <tr><td>新增用户 D7</td><td>14.29%</td><td>13.43%</td><td>+0.86pp / +6.42%</td></tr>
 <tr><td>活跃用户 D7</td><td>28.25%</td><td>27.77%</td><td>+0.49pp / +1.76%</td></tr>
 </table>
-<div class="note"><b>总体留存小幅提升是实验结果(ITT,可信)。</b>换算绝对量级:一万个新用户里多留住约86个。样本百万级,微小差异也显著,故强调"显著但小"。</div>
+<div class="note"><b>总体留存小幅提升是实验结果(ITT，可信)。</b>换算绝对量级：一万个新用户里多留住约86个。样本百万级，微小差异也显著，故强调"显著但小"。</div>
 </div>
 
 <div class="card">
-<h3 style="margin-top:0">一个正向信号:使用时长 +9.3%(单位:秒)</h3>
+<h3 style="margin-top:0">一个正向信号：使用时长 +9.3%</h3>
 <table>
 <tr><th>人群</th><th>人均使用时长(秒)</th></tr>
 <tr><td>访问点滴者(实验前→实验期)</td><td>90.49 → 120(+33%)</td></tr>
 <tr><td>未访问点滴者</td><td>70.38(接近控制组)</td></tr>
 <tr><td>实验组 vs 控制组</td><td>76.03 vs 69.53(+9.3%)</td></tr>
 </table>
-<div class="note good"><b>时长提升真实(+9.3%),高度集中在访问点滴的用户身上。</b>这批人本就高活跃(实验前90.49秒),实验期又涨到120秒(+33%),多出的停留主要来自浏览点滴时间轴 —— 点滴虽记录转化低,却提供了一个新的"逛"的场景。<b>但含自选择(高活跃用户本就更爱访问),"+33%全归点滴"不能说满,机制待验证。</b></div>
+<div class="note good"><b>时长提升真实(+9.3%)，高度集中在访问点滴的用户身上。</b>这批人本就高活跃(实验前90.49秒)，实验期又涨到120秒(+33%)，多出的停留主要来自浏览点滴时间轴 —— 点滴虽记录转化低，却提供了一个新的"逛"的场景。<b>但含自选择(高活跃用户本就更爱访问),"+33%全归点滴"不能说满，机制待验证。</b></div>
 </div>
-<div class="note"><b>为什么留存机制未定 —— 一个规模测算:</b>点滴记录者仅 1,590 人、跨天复记者仅 117 人,而留存提升实际涉及的用户是千级。即使这些记录/复记者全部因点滴而留存,数量也远不足以解释整体留存变化。<b>因此"记录/复记"不足以作为留存主机制,更可能的候选是规模更大的"访问/浏览点滴"(18万)或第三Tab的存在效应。</b>"体重/饮食是留存来源"只能作为候选假设,不能作为结论。</div>
-<div class="evtag ev2">本章证据强度:全局习惯未增强、总体留存正向均已验证 · 留存机制仍为候选假设</div>
+<div class="note"><b>为什么留存机制未定 —— 一个规模测算：</b>点滴记录者仅 1,590 人、跨天复记者仅 117 人，而留存提升实际涉及的用户是千级。即使这些记录/复记者全部因点滴而留存，数量也远不足以解释整体留存变化。<b>因此"记录/复记"不足以作为留存主机制，更可能的候选是规模更大的"访问/浏览点滴"(18万)或第三Tab的存在效应。</b>"体重/饮食是留存来源"只能作为候选假设，不能作为结论。</div>
+<div class="evtag ev2">本章证据强度：全局习惯未增强、总体留存正向均已验证 · 留存机制仍为候选假设</div>
 
-<h2 id="c8">8 · 负向影响与护栏:分析用户真实下降</h2>
-<p class="h2sub">分母效应已排除;入口改道已确认,但影响占比仍待量化</p>
+<h2 id="c8">7 · 上线点滴，有没有伤到原有业务？</h2>
 
 <div class="card">
-<p class="tx" style="margin-top:0">分析用户占 DAU 比显著下降(实验 8.62% vs 控制组1 9.05%,−0.43pp / −4.79%,p&lt;0.01)。结合各组入组DAU逐日还原,实验组日均分析去重UV约 <b>21,618</b>,两控制组均值约 <b>22,476</b>,减少约 <b>858人/日(−3.82%)</b>。同期实验组入组DAU反而更高(+0.98%),因此<b>分母效应已排除:分析用户绝对量确实下降。</b></p>
+<p class="tx" style="margin-top:0"><b>分析用户绝对量真实下降</b> —— 不是 DAU 上涨造成的占比稀释，而是绝对人数减少(同期实验组 DAU 反而更高 +0.98%)。逐日还原后，实验组日均分析 UV 比两控制组均值少约 <b>858 人/日(−3.82%)</b>，如下：</p>
 <table>
 <tr><th>组别</th><th>日均分析去重UV(按DAU×分析占比逐日还原)</th></tr>
 <tr><td>控制组1</td><td>约22,490</td></tr>
@@ -535,43 +617,77 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>控制组2</td><td>约22,462</td></tr>
 <tr><td>实验组 vs 两控制组均值</td><td><b>约−858人/日 / −3.82%</b></td></tr>
 </table>
-<p class="tx">绝对下降已经确认,接下来要区分下降由哪种机制贡献:</p>
+<p class="tx">下降由哪些机制造成？以下是两个待验证的推测：</p>
 <table>
-<tr><th>可能机制</th><th>是否已排除</th></tr>
-<tr><td>① 分母效应:实验组DAU上涨,分析UV不变也会机械拉低占比</td><td class="cg">已排除:分析绝对UV同步下降</td></tr>
-<tr><td>② 入口改道:月经横幅原本点击后进入分析页,实验版本改为直接进入点滴</td><td class="cg">机制已确认;贡献量待归因</td></tr>
-<tr><td>③ 注意力转移:用户改看点滴时间轴,不看分析</td><td class="cr">未排除</td></tr>
+<tr><th>可能机制(推测)</th><th>当前判断</th></tr>
+<tr><td>① 入口改道：控制组记录月经后引导进入分析，实验版本改为直接进入点滴</td><td class="cg">机制已确认；贡献量待归因</td></tr>
+<tr><td>② 注意力转移：用户改看点滴时间轴，不看分析</td><td class="cr">未排除，待验证</td></tr>
 </table>
 
-<h3>横幅人群的分析行为变化(探索性线索)</h3>
-<p class="tx" style="margin-top:0"><b>这张表想验证一件事:</b>月经横幅现在把点击导向了点滴(而非分析页),那么"从横幅进入点滴的人"是不是更少看分析了?下面追踪从横幅进入点滴的 65,043 人,实验前后看不看分析的变化。</p>
-<table>
-<tr><th>实验前 → 实验期</th><th>实验期仍看分析</th><th>实验期不看分析</th><th>小计</th></tr>
-<tr><td><b>实验前看过分析</b>的人</td><td>11,704(延续 53.7%)</td><td class="cr">10,073(不再看 46.3%)</td><td>21,777</td></tr>
-<tr><td>实验前未观测到看分析</td><td>9,031</td><td>34,235</td><td>43,266</td></tr>
-<tr><td><b>合计</b></td><td>20,735</td><td>44,308</td><td>65,043</td></tr>
-</table>
-<div class="note warn"><b>怎么读:</b>横幅进入点滴的人里,实验前有 21,777 人看过分析,到实验期<b>46.3% 不再看分析</b>(第一行红字)。这<b>看起来</b>支持"横幅把人导去点滴、分流了分析"。<br><br><b>但这只是探索性线索,不能作为结论,原因有二:</b>① <b>缺对照</b> —— 没有"未从横幅进点滴的同类人"的流失率作基准,不知道 46.3% 算高还是正常;② <b>自选择</b> —— 会从横幅进点滴的人本就更活跃,他们看不看分析受很多因素影响。<b>要坐实"横幅分流分析",需补横幅点击的去向分布(→分析 / →点滴)在实验组vs控制组的对比。</b></div>
-<div class="note good"><b>原分析用户的延续率已经可以计算。</b>21,777名"实验前看分析且实验期点击横幅"的用户中,11,704人实验期仍看分析,延续率为<b>53.7%</b>;10,073人实验期未再看分析,占<b>46.3%</b>。这说明横幅改道后并非所有原分析用户都停止使用分析,但接近一半在实验期没有延续分析行为,是更直接的行为转移信号。</div>
-
-<div class="note"><b>同时存在反向变化:</b>实验期浏览分析的20,735人中,9,031人实验前未观测到分析,占43.6%。这部分可以描述为"实验期新增/重新出现的分析使用",但不能归因于点滴。矩阵展示的是前后行为变化,由于实验前与实验期窗口长度不同、且人群按实验后的横幅点击筛选,46.3%仍不能直接解释为点滴造成的因果流失率。</div>
-
-<div class="note warn"><b>更新后的结论:分析用户绝对量真实下降,不是DAU上涨造成的比例稀释。</b>产品路径明确存在改道;在实验前使用分析、实验期点击横幅的用户中,46.3%没有延续分析行为,进一步加强了行为转移解释。但现有数据仍不能证明约−858人/日全部由横幅改道造成。下一步需补<b>控制组同类历史分析用户的同期延续率、点击后同日/同会话分析到达率、分析PV</b>,才能从"行为转移信号"推进到"改道造成多少净损失"。<br><br><span style="font-size:12px;color:#999">(注:日均分析UV由逐日DAU×逐日分析用户占比还原,受占比展示精度影响为近似值。横幅点击是实验后的行为分组,存在自选择;实验前窗口也长于实验期,不能把46.3%直接视为因果流失率。)</span></div>
 </div>
-<div class="evtag ev2">本章证据强度:分析绝对下降、横幅路径及原分析用户53.7%延续/46.3%未延续均已验证 · 改道因果贡献待对照</div>
 
-<h2 id="c9">9 · 战略判断与下一步</h2>
-<p class="h2sub">第二曲线放到最后判断 —— 条件对照</p>
+<div class="card">
+<h3 style="margin-top:0">横幅人群的分析行为变化(单独看)</h3>
+<p class="tx" style="margin-top:0">控制组记录月经后引导进入分析，实验版改进入点滴。下图追踪从横幅进入点滴的 65,043 人：左边是实验前看没看过分析，右边是实验期还看不看。带子越粗，人越多。</p>
+<div class="sankey-scroll">
+<svg viewBox="0 0 960 392" role="img" aria-label="横幅进入点滴的 65043 人，实验前后看分析的流向">
+<text x="168" y="18" text-anchor="middle" fill="#8a8a94" font-size="13" font-family="PingFang SC, Microsoft YaHei, sans-serif">实验前</text>
+<text x="792" y="18" text-anchor="middle" fill="#8a8a94" font-size="13" font-family="PingFang SC, Microsoft YaHei, sans-serif">实验期</text>
+<!-- 上看过 21,777 拆成仍看 / 不再看 -->
+<path d="M248 36C430 36 530 36 712 36L712 84C530 84 430 84 248 84Z" fill="#b7e0c8"/>
+<path d="M248 92C430 92 530 92 712 92L712 132C530 132 430 132 248 132Z" fill="#f5c2ce"/>
+<rect x="240" y="36" width="8" height="96" rx="2" fill="#2e7d32"/>
+<rect x="704" y="36" width="8" height="48" rx="2" fill="#2e7d32"/>
+<rect x="704" y="92" width="8" height="40" rx="2" fill="#c2185b"/>
+<text x="228" y="78" text-anchor="end" fill="#333" font-size="13" font-family="PingFang SC, Microsoft YaHei, sans-serif">看过分析</text>
+<text x="228" y="98" text-anchor="end" fill="#2e7d32" font-size="15" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">21,777</text>
+<text x="724" y="56" fill="#1e6b3c" font-size="13" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">仍看 11,704 · 延续 53.7%</text>
+<text x="724" y="110" fill="#a33b55" font-size="13" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">不再看 10,073 · 46.3%</text>
+<!-- 下未看 43,266 拆成才出现 / 仍不看，高度按人数 -->
+<path d="M248 176C430 176 530 176 712 176L712 214C530 214 430 214 248 214Z" fill="#f6e0b8"/>
+<path d="M248 222C430 222 530 222 712 222L712 364C530 364 430 364 248 364Z" fill="#e4e4e8"/>
+<rect x="240" y="176" width="8" height="188" rx="2" fill="#9a9aa2"/>
+<rect x="704" y="176" width="8" height="38" rx="2" fill="#c9a15b"/>
+<rect x="704" y="222" width="8" height="142" rx="2" fill="#9a9aa2"/>
+<text x="228" y="262" text-anchor="end" fill="#333" font-size="13" font-family="PingFang SC, Microsoft YaHei, sans-serif">未看分析</text>
+<text x="228" y="282" text-anchor="end" fill="#555" font-size="15" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">43,266</text>
+<text x="724" y="194" fill="#8a6230" font-size="13" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">看分析 9,031 · 20.9%</text>
+<text x="724" y="292" fill="#555" font-size="13" font-weight="500" font-family="PingFang SC, Microsoft YaHei, sans-serif">仍不看分析 34,235 · 79.1%</text>
+</svg>
+</div>
+<div class="slegend"><span><i style="background:#b7e0c8"></i>仍看</span><span><i style="background:#f5c2ce"></i>不再看</span><span><i style="background:#f6e0b8"></i>看分析</span><span><i style="background:#e4e4e8"></i>仍不看分析</span></div>
+<div class="note">能确认的：
+<ul>
+<li>控制组记录月经后引导进入分析，实验版本改为直接进入点滴。<span class="jd">产品路径已经改道。</span></li>
+<li>在实验前看过分析、实验期又从横幅进入点滴的 21,777 人里，11,704 人仍看分析（延续 53.7%），10,073 人不再看（46.3%）。<span class="jd">并非所有原分析用户都停止使用分析，但接近一半没有延续，这是行为转移信号，看起来支持“横幅把人导去点滴、分流了分析”。</span></li>
+<li>实验期仍看分析的 20,735 人中，9,031 人（43.6%）实验前未观测到分析，只能描述为实验期新增或重新出现的分析使用；前后都不看的 34,235 人与分流无关。<span class="jd">这部分反向变化不能归因于点滴。</span></li>
+<li>分析用户绝对量约 −858 人/日（−3.82%），同期实验组 DAU 反而更高。<span class="jd">这是真实下降，不是 DAU 上涨造成的比例稀释；46.3% 未延续进一步加强了行为转移解释。</span></li>
+</ul>
+</div>
+<div class="note warn">还不能作为结论：
+<ul>
+<li>上图只是探索性线索。<span class="jd">还不能作为“横幅造成流失”的结论。</span></li>
+<li>没有“未从横幅进点滴的同类人”的流失率作基准。<span class="jd">不知道 46.3% 算高还是正常。</span>要坐实“横幅分流分析”，需补横幅点击的去向分布（→分析 / →点滴）在实验组 vs 控制组的对比。</li>
+<li>会从横幅进点滴的人本就更活跃，看不看分析受很多因素影响；这 65,043 人是按实验后的横幅点击筛出来的。<span class="jd">存在自选择，不能把看不看分析都算到横幅改道上。</span></li>
+<li>实验前观察期长于实验期，图上是前后行为变化。<span class="jd">46.3% 不能直接当成点滴造成的因果流失率，仍不能证明日均少约 858 人全部由横幅改道造成。</span></li>
+<li>下一步需补控制组同类历史分析用户的同期延续率、点击后同日/同会话分析到达率、分析 PV，才能从“行为转移信号”推进到“改道造成多少净损失”。</li>
+</ul>
+<span style="font-size:12px;color:#999">注：日均分析 UV 由逐日 DAU×逐日分析用户占比还原，受占比展示精度影响为近似值。</span>
+</div>
+</div>
+<div class="evtag ev2">本章证据强度：分析绝对下降、横幅路径及原分析用户53.7%延续/46.3%未延续均已验证 · 改道因果贡献待对照</div>
+
+<h2 id="c9">8 · 所以，第二曲线成立了吗？下一步做什么？</h2>
 
 <div class="card">
 <table>
 <tr><th>第二曲线条件</th><th>当前状态</th></tr>
 <tr><td>新人群(新用户/近期无记录)</td><td class="cg">🟢 有信号</td></tr>
 <tr><td>新内容(个人生活)</td><td class="cg">🟢 有信号(仅限记录者)</td></tr>
-<tr><td>全局记录规模净增</td><td class="cr">🔴 未出现(UV −0.06% / PV −0.54%)</td></tr>
-<tr><td>跨天习惯</td><td class="cr">🔴 未形成(全局7日记录天数无提升;点滴复记7.1%)</td></tr>
+<tr><td>全局记录规模净增</td><td class="cr">🔴 未出现(UV <span class="neg">−0.06%</span> / PV <span class="neg">−0.54%</span>)</td></tr>
+<tr><td>跨天习惯</td><td class="cr">🔴 未形成(全局7日记录天数无提升；点滴复记7.1%)</td></tr>
 <tr><td>留存机制</td><td class="ca">🟡 未证实(仅候选)</td></tr>
-<tr><td>家庭记录场景</td><td class="ca">🟡 有信号(替女儿记初潮/月经,规模~1%)</td></tr>
+<tr><td>家庭记录场景</td><td class="ca">🟡 有信号(替女儿记初潮/月经，规模~1%)</td></tr>
 <tr><td>旧业务损失可控</td><td class="ca">🟡 部分待验证(返现/广告未纳入)</td></tr>
 </table>
 </div>
@@ -579,67 +695,58 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <div class="card">
 
 
+<div class="bridge"><span class="bt">🔁 回收：第 2 章的三个矛盾，现在都能解答了</span>
+<b>① 规模没涨</b> = 记录者内部的质变，尚未转化为全局记录量的净增(第 3、5 章);<b>② 留存/时长小涨</b> = 主要来自"逛点滴"的存在效应，而非记录行为本身(第 6 章);<b>③ 分析下降</b> = 横幅改道 + 注意力转移，真实存在但具体幅度待量化(第 7 章)。三条线索收口后，才有下面的战略判断。</div>
 <div class="verdict"><h3>最终战略判断</h3>
 <p>点滴已经验证了<span class="hl">"用户愿意用更开放的方式记录个人内容"</span>的需求信号 —— 新人群、新内容、新表达三类信号真实存在。</p>
-<p>但<span class="hl">记录业务的第二增长曲线尚未成立</span>:决定性规模证据显示全局记录 UV/PV 均无净增,记录用户7日活跃天数也没有提升,点滴内部跨天复记仅7.1%,留存机制仍未证实。</p>
-<p style="margin-top:14px;font-size:16px;color:#fff"><b>下一阶段目标,不是继续证明少数记录者内容新,而是验证能否把这种局部价值,扩大为全局记录 UV、记录天数和跨天习惯的净增长。</b>核心杠杆:打破第三Tab的曝光→点击坎(占位认知),和浏览→记录坎(首屏价值)。</p>
+<p>但<span class="hl">记录业务的第二增长曲线尚未成立</span>：决定性规模证据显示全局记录 UV/PV 均无净增，记录用户7日活跃天数也没有提升，点滴内部跨天复记仅7.1%，留存机制仍未证实。</p>
+<p style="margin-top:14px;font-size:16px;color:#fff">下一阶段目标，<b>不是继续证明少数记录者内容新，而是验证能否把这种局部价值，扩大为全局记录 UV、记录天数和跨天习惯的净增长。</b>核心杠杆：打破第三Tab的曝光→点击坎(占位认知)，和浏览→记录坎(首屏价值)。</p>
 </div>
 
-<div class="gap"><h3>剩余必须补充的数据(详见单独清单)</h3>
-<div class="note good"><b>P0-1 已完成:全局记录净增量。</b>实验组 vs 控制组的全局记录 UV/PV 已补,结论为观察期内未出现净增。该项不再列入待补清单。</div>
-<ul>
-<li><b>分析下降归因</b>:控制组同类历史分析用户的同期延续率 + 点击后同日/同会话分析到达率 + 分析PV,量化入口改道与额外注意力转移各自贡献</li>
-<li><b>浏览未记录者(18万)画像</b>:最大人群,回答"点了不记"的真实原因</li>
-<li><b>历史人群分层的实验效应</b>:各记录习惯档 × 实验组vs控制组的记录量与留存(不只看记录者)</li>
-<li><b>留存异质性 + 上限对齐</b>:留存涨在哪层人,与各行为人群规模对齐</li>
-<li><b>返现/广告护栏</b>:第三Tab替换返现的商业损失(交广告侧)</li>
-<li><b>长期衰减</b>:新鲜感消退后,采用率和复访的周度衰减</li>
-</ul>
-</div>
-<div class="evtag ev2">本章证据强度:方向信号成立 · 规模条件已验证未满足 · 持续性与留存机制待验证</div>
+<div class="evtag ev2">本章证据强度：方向信号成立 · 规模条件已验证未满足 · 持续性与留存机制待验证</div>
 
 <h2 id="appendix">附录 · 数据总表与证据强度标记</h2>
 
 <div class="card">
-<h3 style="margin-top:0">A. 核心指标总表(实验组 vs 控制组1检验基线,截至09-09)</h3>
+<h3 style="margin-top:0">A. 核心指标总表(实验组 vs 控制组1检验基线，截至09-09)</h3>
 <table>
 <tr><th>指标</th><th>实验组</th><th>控制组1</th><th>净/相对</th><th>p/功效</th></tr>
-<tr><td>新增用户D7留存</td><td>14.29%</td><td>13.43%</td><td>+0.86pp/+6.42%</td><td>&lt;0.01/0.94</td></tr>
-<tr><td>活跃用户D7留存</td><td>28.25%</td><td>27.77%</td><td>+0.49pp/+1.76%</td><td>&lt;0.01/1.0</td></tr>
-<tr><td>记录用户D7留存</td><td>14.58%</td><td>14.40%</td><td>+0.18pp/+1.27%</td><td>&lt;0.01/0.99</td></tr>
-<tr><td><b>记录用户7日活跃天数</b></td><td><b>1.30</b></td><td><b>1.30</b></td><td>约0/+0.33%</td><td>0.790/0.06</td></tr>
-<tr><td><b>全局记录UV(去重记录用户)</b></td><td><b>1,201,262</b></td><td><b>1,201,951</b></td><td><b>−689/−0.06%</b></td><td>未提供</td></tr>
-<tr><td><b>全局记录PV(记录条数)</b></td><td><b>42,069,259</b></td><td><b>42,297,631</b></td><td><b>−228,372/−0.54%</b></td><td>未提供</td></tr>
-<tr><td>记录用户占DAU比</td><td>34.02%</td><td>34.15%</td><td>−0.13pp/−0.38%</td><td>&lt;0.01/1.0</td></tr>
-<tr><td>人均记录次数</td><td>16.95</td><td>18.20</td><td>−1.25/−6.88%</td><td>0.238/0.2</td></tr>
-<tr><td>记录tab记录用户数</td><td>1,418,876</td><td>1,421,135</td><td>−0.1pp</td><td>—</td></tr>
-<tr><td>分析用户占DAU比</td><td>8.62%</td><td>9.05%</td><td>−0.43pp/−4.79%</td><td>&lt;0.01/1.0</td></tr>
-<tr><td>分析日均UV(逐日还原)</td><td>约21,618</td><td>约22,490</td><td>vs两控制均值约−858/−3.82%</td><td>派生值</td></tr>
-<tr><td>分析功能人均时长(秒)</td><td>25.03</td><td>25.15</td><td>−0.11/−0.44%</td><td>0.661/0.07</td></tr>
-<tr><td>使用时长(秒)</td><td>71.99</td><td>68.36</td><td>+3.63/+5.31%</td><td>0.039/0.54</td></tr>
-<tr><td>入组DAU</td><td>250,832</td><td>248,403</td><td>+0.98%</td><td>0.934/0.05</td></tr>
+<tr><td>新增用户D7留存</td><td>14.29%</td><td>13.43%</td><td class="pos">+0.86pp/+6.42%</td><td>&lt;0.01/0.94</td></tr>
+<tr><td>活跃用户D7留存</td><td>28.25%</td><td>27.77%</td><td class="pos">+0.49pp/+1.76%</td><td>&lt;0.01/1.0</td></tr>
+<tr><td>记录用户D7留存</td><td>14.58%</td><td>14.40%</td><td class="pos">+0.18pp/+1.27%</td><td>&lt;0.01/0.99</td></tr>
+<tr><td>记录用户7日活跃天数</td><td>1.30</td><td>1.30</td><td>约0/+0.33%</td><td>0.790/0.06</td></tr>
+<tr><td>全局记录UV(去重记录用户)</td><td>1,201,262</td><td>1,201,951</td><td class="neg">−689/−0.06%</td><td>未提供</td></tr>
+<tr><td>全局记录PV(记录条数)</td><td>42,069,259</td><td>42,297,631</td><td class="neg">−228,372/−0.54%</td><td>未提供</td></tr>
+<tr><td>记录用户占DAU比</td><td>34.02%</td><td>34.15%</td><td class="neg">−0.13pp/−0.38%</td><td>&lt;0.01/1.0</td></tr>
+<tr><td>人均记录次数</td><td>16.95</td><td>18.20</td><td class="neg">−1.25/−6.88%</td><td>0.238/0.2</td></tr>
+<tr><td>记录tab记录用户数</td><td>1,418,876</td><td>1,421,135</td><td class="neg">−0.1pp</td><td>—</td></tr>
+<tr><td>分析用户占DAU比</td><td>8.62%</td><td>9.05%</td><td class="neg">−0.43pp/−4.79%</td><td>&lt;0.01/1.0</td></tr>
+<tr><td>分析日均UV(逐日还原)</td><td>约21,618</td><td>约22,490</td><td class="neg">vs两控制均值约−858/−3.82%</td><td>派生值</td></tr>
+<tr><td>分析功能人均时长(秒)</td><td>25.03</td><td>25.15</td><td class="neg">−0.11/−0.44%</td><td>0.661/0.07</td></tr>
+<tr><td>使用时长(秒)</td><td>71.99</td><td>68.36</td><td class="pos">+3.63/+5.31%</td><td>0.039/0.54</td></tr>
+<tr><td>入组DAU</td><td>250,832</td><td>248,403</td><td class="pos">+0.98%</td><td>0.934/0.05</td></tr>
 </table>
-<div class="note"><b>看总表的方法:</b>两控制组之间几乎相同 + 实验组明显不同 + p&lt;0.05 + 高功效,才是可信真实效应。同时看相对幅度。最新检验统一截至09-09。<b>使用时长虽达到p=0.039,但功效仅0.54,应表述为"小幅正向、稳定性仍需观察"。</b><span style="color:#999;font-size:12px">P0-1 全局记录 UV/PV 尚未提供显著性/置信区间;分析日均UV为逐日派生近似值。</span></div>
+<div class="note">看总表的方法：两控制组之间几乎相同 + 实验组明显不同 + p&lt;0.05 + 高功效，才是可信真实效应。同时看相对幅度。最新检验统一截至09-09。<b>使用时长虽达到p=0.039，但功效仅0.54，应表述为"小幅正向、稳定性仍需观察"。</b><span style="color:#999;font-size:12px">P0-1 全局记录 UV/PV 尚未提供显著性/置信区间；分析日均UV为逐日派生近似值。</span></div>
 </div>
 
 <div class="card">
 <h3 style="margin-top:0">B. 口径说明(几个人数为何不同)</h3>
 <table>
 <tr><th>数字</th><th>口径</th></tr>
-<tr><td>1,590</td><td>主动记录点滴的去重用户(成功落库,不含被动同步)—— 报告主口径</td></tr>
+<tr><td>1,590</td><td>主动记录点滴的去重用户(成功落库，不含被动同步)—— 报告主口径</td></tr>
 <tr><td>1,658</td><td>含少量口径边界的记录人群(四分类判定基数)</td></tr>
-<tr><td>117 + 1,529</td><td>复记分析口径(≥2天有记录 / 仅1天),基数1,646</td></tr>
+<tr><td>117 + 1,529</td><td>复记分析口径(≥2天有记录 / 仅1天)，基数1,646</td></tr>
 </table>
-<div class="note"><b>三个数差异来自"落库vs输入""是否含边界内容""时间窗"的口径不同,均为去重用户。</b>报告结论统一采用1,590主口径;四分类和复记因分析目的不同,基数略有差异,不影响比例结论。<span style="color:#c62828">(下一版将统一为单一落库口径)</span></div>
+<div class="note">三个数差异来自"落库vs输入""是否含边界内容""时间窗"的口径不同，均为去重用户。报告结论统一采用1,590主口径；四分类和复记因分析目的不同，基数略有差异，不影响比例结论。<b style="color:#c62828">(下一版将统一为单一落库口径)</b></div>
 </div>
 
 <div class="card">
 <h3 style="margin-top:0">C. 数据来源</h3>
 <table>
 <tr><th>分析</th><th>谛听人群包</th></tr>
-<tr><td>ITT指标与显著性检验(截至09-09)</td><td>最新实验工作簿:核心指标增长率 / 指标检验详情 / 入组DAU / 分析用户占DAU比</td></tr>
-<tr><td>月经横幅入口改道</td><td>产品配置确认:旧版点击后进入分析页,实验版本点击后直接进入点滴;贡献量仍需路径归因</td></tr>
-<tr><td>横幅人群分析行为转移</td><td>横幅进入并浏览点滴65,043人;实验前看分析且点击横幅21,777人;其中实验期仍看分析11,704人(延续53.7%),未看分析10,073人(46.3%)</td></tr>
+<tr><td>ITT指标与显著性检验(截至09-09)</td><td>最新实验工作簿：核心指标增长率 / 指标检验详情 / 入组DAU / 分析用户占DAU比</td></tr>
+<tr><td>月经横幅入口改道</td><td>产品配置确认：控制组记录月经后引导进入分析，实验版本点击后直接进入点滴；贡献量仍需路径归因</td></tr>
+<tr><td>横幅人群分析行为转移</td><td>横幅进入并浏览点滴65,043人；实验前看分析且点击横幅21,777人；其中实验期仍看分析11,704人(延续53.7%)，未看分析10,073人(46.3%)</td></tr>
 <tr><td>点滴漏斗</td><td>45868曝光/45774点击/45736浏览/45738记录</td></tr>
 <tr><td>记录者画像</td><td>45738 × 实验前分层(45701-04/45717-18/45706-07/45720)</td></tr>
 <tr><td>增量四分类</td><td>45738 × 5份实验前记录明细(逐条比对)</td></tr>
@@ -658,11 +765,11 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>点滴整体记录转化规模很小(0.11%)</td><td class="cg">✅ 已验证</td></tr>
 <tr><td>美柚整体记录规模没有增长(UV −0.06%、PV −0.54%)</td><td class="cg">✅ 已验证(全局UV/PV直接证据)</td></tr>
 <tr><td>全局记录习惯没有增强(7日记录活跃天数1.30 vs 1.30)</td><td class="cg">✅ 已验证(p=0.790)</td></tr>
-<tr><td>记录者中个人内容占比更高(15.6%→34.6%)</td><td class="ca">🟡 已验证,但仅限记录者</td></tr>
-<tr><td>94.8% 记录者为非纯迁移</td><td class="ca">🟡 信号,非全局净增量</td></tr>
+<tr><td>记录者中个人内容占比更高(15.6%→34.6%)</td><td class="ca">🟡 已验证，但仅限记录者</td></tr>
+<tr><td>94.8% 记录者为非纯迁移</td><td class="ca">🟡 信号，非全局净增量</td></tr>
 <tr><td>返现历史造成位置盲区</td><td class="cr">🔴 待验证假设</td></tr>
 <tr><td>同步旧内容造成不记录</td><td class="cr">🔴 待验证假设</td></tr>
-<tr><td>使用时长增长</td><td class="ca">🟡 整体结果成立,机制待验证</td></tr>
+<tr><td>使用时长增长</td><td class="ca">🟡 整体结果成立，机制待验证</td></tr>
 <tr><td>分析用户绝对量下降</td><td class="cg">✅ 已验证(日均约−858/−3.82%)</td></tr>
 <tr><td>月经横幅改道至点滴</td><td class="cg">✅ 产品路径已确认</td></tr>
 <tr><td>横幅进入点滴用户中仍有31.9%浏览分析</td><td class="cg">✅ 已验证(20,735/65,043)</td></tr>
@@ -670,7 +777,7 @@ td.pos,td.pos b{color:#c62828}td.neg,td.neg b{color:#2e7d32}
 <tr><td>实验前分析且点击横幅用户的分析延续率为53.7%</td><td class="ca">🟡 行为转移信号(11,704/21,777;非因果)</td></tr>
 <tr><td>分析下降中由改道贡献的比例</td><td class="cr">🔴 尚不能判定(需路径归因)</td></tr>
 <tr><td>体重/饮食是留存来源</td><td class="cr">🔴 待验证的候选机制</td></tr>
-<tr><td>第二曲线</td><td class="ca">🟡 方向信号,非已验证</td></tr>
+<tr><td>第二曲线</td><td class="ca">🟡 方向信号，非已验证</td></tr>
 </table>
 </div>
 
